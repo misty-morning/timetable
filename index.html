@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="lib/normalize.css">
+		<link rel="stylesheet" type="text/css" href="index.css">
+ 		<title>Расписание</title>
+	</head>
+<body>
+	<div class="info-board" id="info-board">
+		Test
+	</div>
+	<div class="select-block">
+		<span>Расписание</span>
+		<select id="select-table">
+			<option>Test</option>
+		</select>
+		<button id="new-table">Новое</button>
+		<button id="delete-table">Удалить</button>	
+	</div>
+
+	<div class="table-block">
+		<div class="table-block__station-management">
+			<button id="new-station">Добавить остановку</button>
+			<button id="delete-station">Удалить</button>	
+		</div>
+	
+		<table id="table" class="table-block__table">
+			<tr>
+				<th>
+					№
+				</th>
+				<th>
+					Станция
+				</th>
+				<th>
+					Время прибытия
+				</th>
+				<th>
+					Время отправления
+				</th>
+				<th>
+					Время стоянки
+				</th>
+				<th>
+					Время до следующей стоянки
+				</th>
+			</tr>
+		</table>
+	</div>
+
+	<script type="text/javascript" src="lib/jquery-2.2.1.min.js"></script>
+	<script type="text/javascript" src="lib/underscore-min.js"></script>
+	<script type="text/javascript" src="lib/backbone-min.js"></script>
+	<script type="text/javascript" src="lib/backbone.epoxy.min.js"></script>
+	<script type="text/javascript" src="index.js"></script>
+</body>
+</html>
