@@ -5,12 +5,25 @@ body {
 	width: 100%;
 	height: 20px;
 	padding: 5px;
-	border: 2px black solid;
+	border: 2px #000000 solid;
+
 	margin-bottom: 20px;
 }
 .select-block {
+	position: relative;
+
 	margin-bottom: 20px;
 }
 .table-block__station-management {
 	margin-bottom: 20px;
+}
+.table-block__table-management {
+	margin-top: 20px;
+}
+.modal {
+	display: none;
+	position: absolute;
+	background-color: #999999;
+	padding: 10px;
+	border: 1px #000000 solid;
 }

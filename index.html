@@ -11,20 +11,38 @@
 		Test
 	</div>
 	<div class="select-block">
+		<div id="new-table-modal" class="modal">
+			<label for="table-name-input">Имя</label>
+			<br>
+			<input id="table-name-input" type="text">
+			<button id="new-table-ok">OK</button>
+		</div>	
 		<span>Расписание</span>
 		<select id="select-table">
 			<option>Test</option>
 		</select>
 		<button id="new-table">Новое</button>
-		<button id="delete-table">Удалить</button>	
+
+		<button id="delete-table">Удалить</button>
+
 	</div>
 
 	<div class="table-block">
 		<div class="table-block__station-management">
+			<div id="new-station-modal" class="modal">
+				<label for="station-name-input">Название</label>
+				<br>
+				<input id="station-name-input" type="text">
+				<br>
+				<label for="station-name-input">Время прибытия</label>
+				<br>
+				<input id="station-time-input" type="text">
+				<br>
+				<button id="new-station-ok">OK</button>
+			</div>
 			<button id="new-station">Добавить остановку</button>
 			<button id="delete-station">Удалить</button>	
 		</div>
-	
 		<table id="table" class="table-block__table">
 			<tr>
 				<th>
@@ -47,6 +65,10 @@
 				</th>
 			</tr>
 		</table>
+		<div class="table-block__table-management">
+			<button id="start-table">Старт</button>
+			<button id="stop-table">Стоп</button>	
+		</div>
 	</div>
 
 	<script type="text/javascript" src="lib/jquery-2.2.1.min.js"></script>
