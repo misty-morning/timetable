@@ -6,12 +6,15 @@ var ui = {
 	deleteTable: "#delete-table",
 	tableNameInput: "#table-name-input",
 	newTableOk: "#new-table-ok",
+	newTableNo: "#new-table-no",
 	newStation: "#new-station",
 	newStationModal: "#new-station-modal",
 	deleteStation: "#delete-station",
 	stationNameInput: "#station-name-input",
 	stationTimeInput: "#station-time-input",
+	stationStayInput: "#station-stay-input",
 	newStationOk: "#new-station-ok",
+	newStationNo: "#new-station-no",
 	startTable: "#start-table",
 	stopTable: "#stop-table",
 };
@@ -136,6 +139,9 @@ $(document).ready(function() {
 		$ui.selectTable.children("option[value='"+(tables.length - 1)+"']").prop('selected', true);
 		$ui.newTableModal.hide();
 	});
+	$ui.newTableNo.click(function() {
+		$ui.newTableModal.hide();
+	});
 
 	$ui.newStation.click(function() {
 		$ui.newStationModal.show();
@@ -145,9 +151,13 @@ $(document).ready(function() {
 		var time = $ui.stationTimeInput.val();
 		var hours = parseInt(time[0] + time[1]);
 		var minutes = parseInt(time[3] + time[4]);
+		var stay = parseInt($ui.stationStayInput.val());
 		//console.log(hours + minutes);
-		activeTable.add(new Station(name, hours, minutes));
+		activeTable.add(new Station(name, hours, minutes, stay));
 		activeTable.render();
+		$ui.newStationModal.hide();
+	});
+	$ui.newStationNo.click(function() {
 		$ui.newStationModal.hide();
 	});
 });
