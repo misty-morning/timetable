@@ -29,7 +29,12 @@ function millisecondToTime(millisecond) {
 	//console.log(hours + ":" + minutes);
 	return hours + ":" + minutes;
 }
-
+function fillSelect() {
+	$ui.selectTable.empty();
+	for (var i = 0; i < tables.length; i++) {
+		$ui.selectTable.append("<option value='"+i+"'>"+tables[i].name+"</option");
+	};	
+}
 var Station = function(name, arrivalHour, arrivalMin, stayingTime) {
 	this.name = name;
 	this.arrivalTime = new Date();
@@ -44,6 +49,11 @@ var Station = function(name, arrivalHour, arrivalMin, stayingTime) {
 	}
 	this.stayingTime = ((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60;
 	//console.log(this.stayingTime);
+	this.stayChange = function(minutes) {
+		//this.stayingTime = minutes;
+		this.departureTime.setMinutes(this.arrivalTime.getMinutes() + minutes);
+		this.stayingTime = ((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60;
+	}
 }
 var Table = function(name, firstStation, lastStation) {
 	this.name = name;
@@ -54,7 +64,7 @@ var Table = function(name, firstStation, lastStation) {
 	if (lastStation) {
 		this.stations.push(lastStation);
 	}
-	this.render = function() {
+	this.renderAll = function() {
 		$(".tt-row").remove();
 		for (var i = 0; i < this.stations.length; i++) {
 			var newStationWay = millisecondToTime(this.stations[i].nextStationWay);
@@ -64,11 +74,33 @@ var Table = function(name, firstStation, lastStation) {
 			
 			$ui.table.append("<tr class='tt-row'><td>"+ (i + 1) +"</td><td>"+ this.stations[i].name +"</td><td>"
 				+ this.stations[i].arrivalTime.getHours() + ":" + this.stations[i].arrivalTime.getMinutes() 
-				+"</td><td>"
+				+"</td><td class='departure-time' data-id='"+i+"'>"
 				+ this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes() 
-				+"</td><td>"+ this.stations[i].stayingTime +"</td><td>"+ newStationWay +"</td></tr>");
-			//this.stations[i];
+				+"</td><td><input class='stay-time' data-id='"+i+"' type='number' value='"+ this.stations[i].stayingTime +
+				"'></td><td class='station-way' data-id='"+i+"'>"+ newStationWay +"</td></tr>");
 		};
+		$(".stay-time").change(function() {
+			var id = $(this).data("id");
+			var minutes = parseInt($(this).val());
+			//console.log(id);
+			activeTable.stations[id].stayChange(minutes);
+			activeTable.sort();
+			activeTable.renderStationWay();
+			activeTable.renderDepartureTime();
+		});
+	}
+	this.renderStationWay = function() {
+		for (var i = 0; i < this.stations.length; i++) {
+			var newStationWay = millisecondToTime(this.stations[i].nextStationWay);
+			$(".station-way[data-id='"+i+"']").html(newStationWay);
+		}
+
+	}
+	this.renderDepartureTime = function() {
+		for (var i = 0; i < this.stations.length; i++) {
+			//var newStationWay = millisecondToTime(this.stations[i].nextStationWay);
+			$(".departure-time[data-id='"+i+"']").html(this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes());
+		}
 	}
 	this.sort = function() {
 		var count = this.stations.length - 1;
@@ -92,10 +124,10 @@ var Table = function(name, firstStation, lastStation) {
 	this.add = function(station) {
 		this.stations.push(station);
 		this.sort();
-		//this.render();
+		//this.renderAll();
 	}
 
-	//this.render();
+	//this.renderAll();
 }
 var time = new Date();
 //console.log(time.getMilliseconds());
@@ -112,20 +144,14 @@ mskPod.add(new Station("Красный строитель", 8, 37, 5));
 var tables = [mskSpb, mskPod];
 var activeTable = tables[0];
 
-function fillSelect() {
-	$ui.selectTable.empty();
-	for (var i = 0; i < tables.length; i++) {
-		$ui.selectTable.append("<option value='"+i+"'>"+tables[i].name+"</option");
-	};	
-}
 $(document).ready(function() {
-	activeTable.render();
+	activeTable.renderAll();
 	fillSelect();
 
 	$ui.selectTable.change(function() {
 		var id = $(this).children("option:selected").attr("value");
 		activeTable = tables[id];
-		activeTable.render();
+		activeTable.renderAll();
 	});
 	$ui.newTable.click(function() {
 		$ui.newTableModal.show();
@@ -134,7 +160,7 @@ $(document).ready(function() {
 		var name = $ui.tableNameInput.val();
 		tables.push(new Table(name));
 		activeTable = tables[tables.length - 1];
-		activeTable.render();
+		activeTable.renderAll();
 		fillSelect();
 		$ui.selectTable.children("option[value='"+(tables.length - 1)+"']").prop('selected', true);
 		$ui.newTableModal.hide();
@@ -154,7 +180,7 @@ $(document).ready(function() {
 		var stay = parseInt($ui.stationStayInput.val());
 		//console.log(hours + minutes);
 		activeTable.add(new Station(name, hours, minutes, stay));
-		activeTable.render();
+		activeTable.renderAll();
 		$ui.newStationModal.hide();
 	});
 	$ui.newStationNo.click(function() {
