@@ -20,90 +20,103 @@ for (el in ui) {
 	$ui[el] = $(ui[el]);
 }
 //console.log($ui);
+function millisecondToTime(millisecond) {
+	var hours = Math.floor(((millisecond / 1000) / 60) / 60);
+	var minutes = Math.floor((millisecond / 1000) / 60) % 60;
+	//console.log(hours + ":" + minutes);
+	return hours + ":" + minutes;
+}
 
-$(document).ready(function() {
-	
-	var time = new Date();
-	//console.log(time.getMilliseconds());
-
-	var Station = function(name, arrivalHour, arrivalMin, stayingTime) {
-		this.name = name;
-		this.arrivalTime = new Date();
-		this.arrivalTime.setHours(arrivalHour);
-		this.arrivalTime.setMinutes(arrivalMin, 0);
-		this.time = this.arrivalTime.getTime();
-		this.departureTime = new Date();
-		this.departureTime.setHours(arrivalHour);
-		this.departureTime.setMinutes(arrivalMin, 0);
-		if (stayingTime) {
-			this.departureTime.setMinutes(this.arrivalTime.getMinutes() + stayingTime);
-		}
-		this.stayingTime = ((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60;
-		//console.log(this.stayingTime);
+var Station = function(name, arrivalHour, arrivalMin, stayingTime) {
+	this.name = name;
+	this.arrivalTime = new Date();
+	this.arrivalTime.setHours(arrivalHour);
+	this.arrivalTime.setMinutes(arrivalMin, 0);
+	this.time = this.arrivalTime.getTime();
+	this.departureTime = new Date();
+	this.departureTime.setHours(arrivalHour);
+	this.departureTime.setMinutes(arrivalMin, 0);
+	if (stayingTime) {
+		this.departureTime.setMinutes(this.arrivalTime.getMinutes() + stayingTime);
 	}
-	var Table = function(name, firstStation, lastStation) {
-		this.name = name;
-		this.stations = [];
-		if (firstStation) {
-			this.stations.push(firstStation);
-		}
-		if (lastStation) {
-			this.stations.push(lastStation);
-		}
-		this.render = function() {
-			$(".tt-row").remove();
-			for (var i = 0; i < this.stations.length; i++) {
-				
-				$ui.table.append("<tr class='tt-row'><td>"+ (i + 1) +"</td><td>"+ this.stations[i].name +"</td><td>"
-					+ this.stations[i].arrivalTime.getHours() + ":" + this.stations[i].arrivalTime.getMinutes() 
-					+"</td><td>"
-					+ this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes() 
-					+"</td><td>"+ this.stations[i].stayingTime +"</td></tr>");
-				//this.stations[i];
-			};
-		}
-		this.sort = function() {
-			var count = this.stations.length - 1;
-			for (var i = 0; i < count; i++) {
-				for (var j = 0; j < count-i; j++) {
-					if (this.stations[j].time > this.stations[j+1].time) {
-						var max = this.stations[j];
-						this.stations[j] = this.stations[j+1];
-						this.stations[j+1] = max;
-					}
+	this.stayingTime = ((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60;
+	//console.log(this.stayingTime);
+}
+var Table = function(name, firstStation, lastStation) {
+	this.name = name;
+	this.stations = [];
+	if (firstStation) {
+		this.stations.push(firstStation);
+	}
+	if (lastStation) {
+		this.stations.push(lastStation);
+	}
+	this.render = function() {
+		$(".tt-row").remove();
+		for (var i = 0; i < this.stations.length; i++) {
+			var newStationWay = millisecondToTime(this.stations[i].nextStationWay);
+			if (i === this.stations.length - 1) {
+				newStationWay = "Станция прибытия";
+			}
+			
+			$ui.table.append("<tr class='tt-row'><td>"+ (i + 1) +"</td><td>"+ this.stations[i].name +"</td><td>"
+				+ this.stations[i].arrivalTime.getHours() + ":" + this.stations[i].arrivalTime.getMinutes() 
+				+"</td><td>"
+				+ this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes() 
+				+"</td><td>"+ this.stations[i].stayingTime +"</td><td>"+ newStationWay +"</td></tr>");
+			//this.stations[i];
+		};
+	}
+	this.sort = function() {
+		var count = this.stations.length - 1;
+		for (var i = 0; i < count; i++) {
+			for (var j = 0; j < count-i; j++) {
+				if (this.stations[j].time > this.stations[j+1].time) {
+					var max = this.stations[j];
+					this.stations[j] = this.stations[j+1];
+					this.stations[j+1] = max;
 				}
 			}
-			this.stations[0].stayingTime = "Станция отправления";
-			this.stations[this.stations.length - 1].stayingTime = "Станция прибытия";
-
 		}
-		this.add = function(station) {
-			this.stations.push(station);
-			this.sort();
-			//this.render();
+		this.stations[0].stayingTime = "Станция отправления";
+		this.stations[this.stations.length - 1].stayingTime = "Станция прибытия";
+
+		for (var i = 0; i < count; i++) {
+			this.stations[i].nextStationWay = this.stations[i + 1].arrivalTime.getTime() - this.stations[i].departureTime.getTime();
 		}
 
+	}
+	this.add = function(station) {
+		this.stations.push(station);
+		this.sort();
 		//this.render();
 	}
 
-	var mskSpb = new Table("Москва - Спб", new Station("Москва", 8, 0), new Station("Санкт-Петербург", 18, 30));
-	mskSpb.add(new Station("Тверь", 10, 15, 20));
-	mskSpb.add(new Station("Бологое", 13, 37, 7));
-	mskSpb.add(new Station("Малая Вишера", 17, 10, 5));
+	//this.render();
+}
+var time = new Date();
+//console.log(time.getMilliseconds());
 
-	var mskPod = new Table("Подольск - Москва", new Station("Подольск", 7, 10), new Station("Москва", 9, 0));
-	mskPod.add(new Station("Царицыно", 8, 15, 3));
-	mskPod.add(new Station("Красный строитель", 8, 37, 5));
+var mskSpb = new Table("Москва - Спб", new Station("Москва", 8, 0), new Station("Санкт-Петербург", 18, 30));
+mskSpb.add(new Station("Тверь", 10, 15, 20));
+mskSpb.add(new Station("Бологое", 13, 37, 7));
+mskSpb.add(new Station("Малая Вишера", 17, 10, 5));
 
-	var tables = [mskSpb, mskPod];
-	var activeTable = tables[0];
+var mskPod = new Table("Подольск - Москва", new Station("Подольск", 7, 10), new Station("Москва", 9, 0));
+mskPod.add(new Station("Царицыно", 8, 15, 3));
+mskPod.add(new Station("Красный строитель", 8, 37, 5));
+
+var tables = [mskSpb, mskPod];
+var activeTable = tables[0];
+
+function fillSelect() {
+	$ui.selectTable.empty();
+	for (var i = 0; i < tables.length; i++) {
+		$ui.selectTable.append("<option value='"+i+"'>"+tables[i].name+"</option");
+	};	
+}
+$(document).ready(function() {
 	activeTable.render();
-	function fillSelect() {
-		$ui.selectTable.empty();
-		for (var i = 0; i < tables.length; i++) {
-			$ui.selectTable.append("<option value='"+i+"'>"+tables[i].name+"</option");
-		};	
-	}
 	fillSelect();
 
 	$ui.selectTable.change(function() {
