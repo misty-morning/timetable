@@ -17,6 +17,7 @@ var ui = {
 	newStationNo: "#new-station-no",
 	startTable: "#start-table",
 	stopTable: "#stop-table",
+	board: "#board",
 };
 var $ui = {};
 for (el in ui) {
@@ -56,7 +57,7 @@ var Station = function(name, arrivalHour, arrivalMin, stayingTime) {
 		this.departureTime.setMinutes(this.arrivalTime.getMinutes() + stayingTime);
 	}
 	this.stayingTime = Math.floor(((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60);
-	console.log(this.stayingTime);
+	//console.log(this.stayingTime);
 	//console.log(this.stayingTime);
 	this.stayChange = function(minutes) {
 		//this.stayingTime = minutes;
@@ -169,13 +170,13 @@ var Table = function(name, firstStation, lastStation) {
 
 	//this.renderAll();
 }
-var time = new Date();
+
 //console.log(time.getMilliseconds());
 
-var mskSpb = new Table("Москва - Спб", new Station("Москва", 8, 0), new Station("Санкт-Петербург", 18, 30));
+var mskSpb = new Table("Москва - Спб", new Station("Москва", 8, 0), new Station("Санкт-Петербург", 23, 30));
 mskSpb.add(new Station("Тверь", 10, 15, 20));
 mskSpb.add(new Station("Бологое", 13, 37, 7));
-mskSpb.add(new Station("Малая Вишера", 17, 10, 5));
+mskSpb.add(new Station("Малая Вишера", 20, 40, 5));
 
 var mskPod = new Table("Подольск - Москва", new Station("Подольск", 7, 10), new Station("Москва", 9, 0));
 mskPod.add(new Station("Царицыно", 8, 15, 3));
@@ -184,9 +185,33 @@ mskPod.add(new Station("Красный строитель", 8, 37, 5));
 var tables = [mskSpb, mskPod];
 var activeTable = tables[0];
 
+function board(activeTable) {
+	//console.log("board");
+	$ui.board.empty();
+	var time = new Date().getTime();
+	for (var i = 0; i < activeTable.stations.length; i++) {
+		var remainingMinutesж
+		var timeToAnnounce = activeTable.stations[i].time - 15*60*1000;
+		if(time >= timeToAnnounce && time < activeTable.stations[i].time) {
+			remainingMinutes = Math.ceil(((activeTable.stations[i].time - time) / 1000) / 60);
+			//console.log(remainingMinutes);
+			$ui.board.html("Следующая станция: " + activeTable.stations[i].name + ". Прибытие через "+ remainingMinutes +" минут.");
+			break;
+		}
+		else if (time >= activeTable.stations[i].time && time <= activeTable.stations[i].departureTime.getTime()) {
+			remainingMinutes = Math.ceil(((activeTable.stations[i].departureTime.getTime() - time) / 1000) / 60);
+			$ui.board.html("Стоянка: " + activeTable.stations[i].name + ". Отправление через "+ remainingMinutes +" минут.");
+			break;
+		}
+	};
+
+}
+
 $(document).ready(function() {
 	activeTable.renderAll();
 	fillSelect();
+	board(activeTable);
+	setInterval("board(activeTable)", 30000);
 
 	$ui.selectTable.change(function() {
 		var id = $(this).children("option:selected").attr("value");
@@ -226,5 +251,6 @@ $(document).ready(function() {
 	$ui.newStationNo.click(function() {
 		$ui.newStationModal.hide();
 	});
+
 });
 
