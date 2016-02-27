@@ -35,6 +35,14 @@ function fillSelect() {
 		$ui.selectTable.append("<option value='"+i+"'>"+tables[i].name+"</option");
 	};	
 }
+function timeForInput(hours, minutes) {
+	hours = hours.toString();
+	minutes = minutes.toString();
+	if (hours.length == 1) hours = '0' + hours;
+	if (minutes.length == 1) minutes = '0' + minutes;
+
+	return hours + ":" + minutes;
+}
 var Station = function(name, arrivalHour, arrivalMin, stayingTime) {
 	this.name = name;
 	this.arrivalTime = new Date();
@@ -47,13 +55,25 @@ var Station = function(name, arrivalHour, arrivalMin, stayingTime) {
 	if (stayingTime) {
 		this.departureTime.setMinutes(this.arrivalTime.getMinutes() + stayingTime);
 	}
-	this.stayingTime = ((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60;
+	this.stayingTime = Math.floor(((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60);
+	console.log(this.stayingTime);
 	//console.log(this.stayingTime);
 	this.stayChange = function(minutes) {
 		//this.stayingTime = minutes;
 		this.departureTime.setMinutes(this.arrivalTime.getMinutes() + minutes);
-		this.stayingTime = ((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60;
+		this.stayingTime = Math.floor(((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60);
+		//console.log(this.stayingTime);
+
 	}
+	this.arrivalTimeChange = function(hours, minutes) {
+		this.arrivalTime.setHours(hours, 0);
+		this.arrivalTime.setMinutes(minutes, 0);
+		this.time = this.arrivalTime.getTime();
+		this.departureTime.setHours(hours);
+		this.departureTime.setMinutes(this.arrivalTime.getMinutes() + this.stayingTime);
+		//this.stayingTime = ((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60;
+	}
+
 }
 var Table = function(name, firstStation, lastStation) {
 	this.name = name;
@@ -71,9 +91,10 @@ var Table = function(name, firstStation, lastStation) {
 			if (i === this.stations.length - 1) {
 				newStationWay = "Станция прибытия";
 			}
-			
-			$ui.table.append("<tr class='tt-row'><td>"+ (i + 1) +"</td><td>"+ this.stations[i].name +"</td><td>"
-				+ this.stations[i].arrivalTime.getHours() + ":" + this.stations[i].arrivalTime.getMinutes() 
+			var arrivalTime = timeForInput(this.stations[i].arrivalTime.getHours(), this.stations[i].arrivalTime.getMinutes());
+
+			$ui.table.append("<tr class='tt-row'><td>"+ (i + 1) +"</td><td>"+ this.stations[i].name +
+				"</td><td><input class='arrival-time' data-id='"+i+"' type='time' value='"+ arrivalTime +"'>"
 				+"</td><td class='departure-time' data-id='"+i+"'>"
 				+ this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes() 
 				+"</td><td><input class='stay-time' data-id='"+i+"' type='number' value='"+ this.stations[i].stayingTime +
@@ -88,19 +109,38 @@ var Table = function(name, firstStation, lastStation) {
 			activeTable.renderStationWay();
 			activeTable.renderDepartureTime();
 		});
+		$(".arrival-time").change(function() {
+			var id = $(this).data("id");
+			var time = $(this).val();
+			var hours = parseInt(time[0] + time[1]);
+			var minutes = parseInt(time[3] + time[4]);
+			activeTable.stations[id].arrivalTimeChange(hours, minutes);
+			activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
+			if (activeTable.stations[id].nextStationWay < 0 || activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime()) {
+				activeTable.sort();
+				activeTable.renderAll();
+			}
+			else {
+				activeTable.sort();
+				activeTable.renderStationWay();
+				activeTable.renderDepartureTime();				
+			}
+
+		});
 	}
 	this.renderStationWay = function() {
-		for (var i = 0; i < this.stations.length; i++) {
+		for (var i = 0; i < this.stations.length - 1; i++) {
 			var newStationWay = millisecondToTime(this.stations[i].nextStationWay);
 			$(".station-way[data-id='"+i+"']").html(newStationWay);
 		}
-
+		$(".station-way[data-id='"+ (this.stations.length - 1)+"']").html("Станция прибытия");
 	}
 	this.renderDepartureTime = function() {
 		for (var i = 0; i < this.stations.length; i++) {
 			//var newStationWay = millisecondToTime(this.stations[i].nextStationWay);
 			$(".departure-time[data-id='"+i+"']").html(this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes());
 		}
+		
 	}
 	this.sort = function() {
 		var count = this.stations.length - 1;
