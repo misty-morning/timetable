@@ -41,13 +41,22 @@
 				<br>
 				<label for="station-stay-input">Время стоянки</label>
 				<br>
-				<input id="station-stay-input" type="number">
+				<input id="station-stay-input" class="time-number-input" type="number">
 				<br>
 				<button id="new-station-ok">OK</button>
 				<button id="new-station-no">Отмена</button>
 			</div>
+			<div id="del-station-modal" class="modal">
+				<p>
+					Выберите станцию для удаления
+				</p>
+				<select id="del-station-select"></select>
+				<button id="del-station-ok">OK</button>
+				<button id="del-station-no">Отмена</button>
+			</div>
 			<button id="new-station">Добавить остановку</button>
-			<button id="delete-station">Удалить</button>	
+			<button id="delete-station">Удалить</button>
+
 		</div>
 		<table id="table" class="table-block__table">
 			<tr>

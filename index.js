@@ -15,6 +15,7 @@ var ui = {
 	stationStayInput: "#station-stay-input",
 	newStationOk: "#new-station-ok",
 	newStationNo: "#new-station-no",
+	delStationModal: "#del-station-modal",
 	startTable: "#start-table",
 	stopTable: "#stop-table",
 	board: "#board",
@@ -95,7 +96,7 @@ var Table = function(name, firstStation, lastStation) {
 			var arrivalMinutesEL = "<input type='number' min='0' max='59' data-id='"+i+"' class='time-number-input arrival-minute' value='"+this.stations[i].arrivalTime.getMinutes()+"'>";
 			var arrival = arrivalHoursEL + " : " + arrivalMinutesEL;
 			if (i !== 0 && i !== this.stations.length - 1) {
-				var stayTimeEl = "<input class='stay-time time-number-input' data-id='"+i+"' type='number' value='"+ this.stations[i].stayingTime +"'> мин.";
+				var stayTimeEl = "<input class='stay-time time-number-input' data-id='"+i+"' min='0' type='number' value='"+ this.stations[i].stayingTime +"'> мин.";
 				var departureTimeEl = "<span class='departure-time' data-id='"+i+"'>"+ this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes() +"</span>";
 			}
 			else {
@@ -122,11 +123,7 @@ var Table = function(name, firstStation, lastStation) {
 			activeTable.renderStationWay();
 			activeTable.renderDepartureTime();
 		});
-		$(".arrival-hour").change(function() {
-			var id = $(this).data("id");
-			
-			var hours = parseInt($(this).val());
-			var minutes = parseInt($(".arrival-minute[data-id='"+ id +"']").val());
+		function setNewArrivalTime(id, hours, minutes) {
 			activeTable.stations[id].arrivalTimeChange(hours, minutes);
 			if (id !== activeTable.stations.length - 1) {
 				activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
@@ -144,6 +141,30 @@ var Table = function(name, firstStation, lastStation) {
 				activeTable.renderStationWay();
 				activeTable.renderDepartureTime();				
 			}
+		}
+		$(".arrival-hour").change(function() {
+			var id = $(this).data("id");
+			
+			var hours = parseInt($(this).val());
+			var minutes = parseInt($(".arrival-minute[data-id='"+ id +"']").val());
+			setNewArrivalTime(id, hours, minutes);
+/*			activeTable.stations[id].arrivalTimeChange(hours, minutes);
+			if (id !== activeTable.stations.length - 1) {
+				activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
+			}
+			else {
+				activeTable.stations[id].nextStationWay = 0;
+			}
+			activeTable.sort();
+			if (activeTable.stations[id].nextStationWay < 0 || (activeTable.stations[id - 1] && activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime())) {
+				
+				activeTable.renderAll();
+			}
+			else {
+				
+				activeTable.renderStationWay();
+				activeTable.renderDepartureTime();				
+			}*/
 
 		});
 		$(".arrival-minute").change(function() {
@@ -151,9 +172,10 @@ var Table = function(name, firstStation, lastStation) {
 			
 			var hours = parseInt($(".arrival-hour[data-id='"+ id +"']").val());
 			var minutes = parseInt($(this).val());
-			activeTable.stations[id].arrivalTimeChange(hours, minutes);
+			setNewArrivalTime(id, hours, minutes);
+/*			activeTable.stations[id].arrivalTimeChange(hours, minutes);
 			activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
-			if (activeTable.stations[id].nextStationWay < 0 || activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime()) {
+			if (activeTable.stations[id].nextStationWay < 0 || (activeTable.stations[id - 1] && activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime())) {
 				activeTable.sort();
 				activeTable.renderAll();
 			}
@@ -161,7 +183,7 @@ var Table = function(name, firstStation, lastStation) {
 				activeTable.sort();
 				activeTable.renderStationWay();
 				activeTable.renderDepartureTime();				
-			}
+			}*/
 
 		});
 	}
