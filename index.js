@@ -1,12 +1,19 @@
 var ui = {
 	table: "#table",
 	selectTable: "#select-table",
+
 	newTable: "#new-table",
 	newTableModal: "#new-table-modal",
 	deleteTable: "#delete-table",
 	tableNameInput: "#table-name-input",
 	newTableOk: "#new-table-ok",
 	newTableNo: "#new-table-no",
+
+	delTableModal: "#del-table-modal",
+	delTableSelect: "#del-table-select",
+	delTableOk: "#del-table-ok",
+	delTableNo: "#del-table-no",
+
 	newStation: "#new-station",
 	newStationModal: "#new-station-modal",
 	deleteStation: "#delete-station",
@@ -15,12 +22,15 @@ var ui = {
 	stationStayInput: "#station-stay-input",
 	newStationOk: "#new-station-ok",
 	newStationNo: "#new-station-no",
+
 	delStationModal: "#del-station-modal",
 	delStationSelect: "#del-station-select",
 	delStationOk: "#del-station-ok",
 	delStationNo: "#del-station-no",
+
 	startTable: "#start-table",
 	stopTable: "#stop-table",
+
 	board: "#board",
 };
 var $ui = {};
@@ -147,47 +157,15 @@ var Table = function(name, firstStation, lastStation) {
 		}
 		$(".arrival-hour").change(function() {
 			var id = $(this).data("id");
-			
 			var hours = parseInt($(this).val());
 			var minutes = parseInt($(".arrival-minute[data-id='"+ id +"']").val());
 			setNewArrivalTime(id, hours, minutes);
-/*			activeTable.stations[id].arrivalTimeChange(hours, minutes);
-			if (id !== activeTable.stations.length - 1) {
-				activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
-			}
-			else {
-				activeTable.stations[id].nextStationWay = 0;
-			}
-			activeTable.sort();
-			if (activeTable.stations[id].nextStationWay < 0 || (activeTable.stations[id - 1] && activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime())) {
-				
-				activeTable.renderAll();
-			}
-			else {
-				
-				activeTable.renderStationWay();
-				activeTable.renderDepartureTime();				
-			}*/
-
 		});
 		$(".arrival-minute").change(function() {
 			var id = $(this).data("id");
-			
 			var hours = parseInt($(".arrival-hour[data-id='"+ id +"']").val());
 			var minutes = parseInt($(this).val());
 			setNewArrivalTime(id, hours, minutes);
-/*			activeTable.stations[id].arrivalTimeChange(hours, minutes);
-			activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
-			if (activeTable.stations[id].nextStationWay < 0 || (activeTable.stations[id - 1] && activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime())) {
-				activeTable.sort();
-				activeTable.renderAll();
-			}
-			else {
-				activeTable.sort();
-				activeTable.renderStationWay();
-				activeTable.renderDepartureTime();				
-			}*/
-
 		});
 	}
 	this.renderStationWay = function() {
@@ -220,9 +198,6 @@ var Table = function(name, firstStation, lastStation) {
 				}
 			}
 		}
-		//this.stations[0].stayingTime = "Станция отправления";
-		//this.stations[this.stations.length - 1].stayingTime = "Станция прибытия";
-		//this.stations[this.stations.length - 1].stayingTime = 0;
 
 		for (var i = 0; i < count; i++) {
 			this.stations[i].nextStationWay = this.stations[i + 1].arrivalTime.getTime() - this.stations[i].departureTime.getTime();
@@ -243,6 +218,7 @@ var Table = function(name, firstStation, lastStation) {
 var mskSpb = new Table("Москва - Спб", new Station("Москва", 8, 0), new Station("Санкт-Петербург", 23, 30));
 mskSpb.add(new Station("Тверь", 10, 15, 20));
 mskSpb.add(new Station("Бологое", 13, 37, 7));
+mskSpb.add(new Station("Окуловка", 17, 33, 4));
 mskSpb.add(new Station("Малая Вишера", 20, 40, 5));
 
 var mskPod = new Table("Подольск - Москва", new Station("Подольск", 7, 10), new Station("Москва", 9, 0));
@@ -251,7 +227,7 @@ mskPod.add(new Station("Красный строитель", 8, 37, 5));
 
 var tables = [mskSpb, mskPod];
 var activeTable = tables[0];
-
+activeTable.id = 0;
 function board(activeTable) {
 	//console.log("board");
 	$ui.board.html("Расписание активно");
@@ -301,6 +277,7 @@ $(document).ready(function() {
 	$ui.selectTable.change(function() {
 		var id = $(this).children("option:selected").attr("value");
 		activeTable = tables[id];
+		activeTable.id = id;
 		activeTable.renderAll();
 		//if (tableActive) restartBoard();
 		clearBoard();
@@ -312,6 +289,7 @@ $(document).ready(function() {
 		var name = $ui.tableNameInput.val();
 		tables.push(new Table(name));
 		activeTable = tables[tables.length - 1];
+		activeTable.id = tables.length - 1;
 		activeTable.renderAll();
 		fillSelect();
 		//if (tableActive) restartBoard();
@@ -322,6 +300,31 @@ $(document).ready(function() {
 	$ui.newTableNo.click(function() {
 		$ui.newTableModal.hide();
 	});
+	$ui.deleteTable.click(function() {
+		$ui.delTableSelect.empty();
+		for (var i = 0; i < tables.length; i++) {
+			$ui.delTableSelect.append("<option value='"+i+"'>"+ tables[i].name +"</option>");
+		};
+
+		$ui.delTableModal.show();
+	});
+	$ui.delTableNo.click(function() {
+		$ui.delTableModal.hide();
+	});
+	$ui.delTableOk.click(function() {
+		var id = $ui.delTableSelect.children("option:selected").attr("value");
+
+		tables.splice(id, 1);
+		if (activeTable.id === id) {
+			activeTable = tables[0];
+			activeTable.id = 0;
+			activeTable.renderAll();
+		}
+		fillSelect();
+
+		$ui.delTableModal.hide();
+	});
+
 
 	$ui.newStation.click(function() {
 		$ui.newStationModal.show();
@@ -353,7 +356,7 @@ $(document).ready(function() {
 	});
 	$ui.delStationOk.click(function() {
 		var id = $ui.delStationSelect.children("option:selected").attr("value");
-		console.log(id);
+		//console.log(id);
 		activeTable.stations.splice(id, 1);
 		activeTable.sort();
 		activeTable.renderAll();

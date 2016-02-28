@@ -17,6 +17,17 @@
 			<input id="table-name-input" type="text">
 			<button id="new-table-ok">OK</button>
 			<button id="new-table-no">Отмена</button>
+		</div>
+		<div id="del-table-modal" class="modal">
+			<p>
+				Выберите расписание для удаления
+			</p>
+			<select id="del-table-select">
+				<option disabled="disabled">Расписание</option>
+			</select>
+			<br>
+			<button id="del-table-ok">OK</button>
+			<button id="del-table-no">Отмена</button>		
 		</div>	
 		<span>Расписание</span>
 		<select id="select-table">
@@ -50,7 +61,9 @@
 				<p>
 					Выберите станцию для удаления
 				</p>
-				<select id="del-station-select"></select>
+				<select id="del-station-select">
+					<option disabled="disabled">Станция</option>
+				</select>
 				<br>
 				<button id="del-station-ok">OK</button>
 				<button id="del-station-no">Отмена</button>
