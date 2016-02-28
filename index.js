@@ -128,7 +128,13 @@ var Table = function(name, firstStation, lastStation) {
 			var hours = parseInt($(this).val());
 			var minutes = parseInt($(".arrival-minute[data-id='"+ id +"']").val());
 			activeTable.stations[id].arrivalTimeChange(hours, minutes);
-			activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
+			if (id !== activeTable.stations.length - 1) {
+				activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
+			}
+			else {
+				activeTable.stations[id].nextStationWay = 0;
+			}
+			
 			if (activeTable.stations[id].nextStationWay < 0 || activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime()) {
 				activeTable.sort();
 				activeTable.renderAll();
@@ -191,7 +197,7 @@ var Table = function(name, firstStation, lastStation) {
 		}
 		//this.stations[0].stayingTime = "Станция отправления";
 		//this.stations[this.stations.length - 1].stayingTime = "Станция прибытия";
-		//this.stations[this.stations.length - 1].stayingTime = "Станция прибытия";
+		//this.stations[this.stations.length - 1].stayingTime = 0;
 
 		for (var i = 0; i < count; i++) {
 			this.stations[i].nextStationWay = this.stations[i + 1].arrivalTime.getTime() - this.stations[i].departureTime.getTime();
