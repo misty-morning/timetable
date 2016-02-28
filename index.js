@@ -28,7 +28,7 @@ function millisecondToTime(millisecond) {
 	var hours = Math.floor(((millisecond / 1000) / 60) / 60);
 	var minutes = Math.floor((millisecond / 1000) / 60) % 60;
 	//console.log(hours + ":" + minutes);
-	return hours + ":" + minutes;
+	return hours + " ч. " + minutes + " мин.";
 }
 function fillSelect() {
 	$ui.selectTable.empty();
@@ -88,18 +88,30 @@ var Table = function(name, firstStation, lastStation) {
 	this.renderAll = function() {
 		$(".tt-row").remove();
 		for (var i = 0; i < this.stations.length; i++) {
-			var newStationWay = millisecondToTime(this.stations[i].nextStationWay);
-			if (i === this.stations.length - 1) {
-				newStationWay = "Станция прибытия";
+			
+
+
+			var arrivalHoursEL = "<input type='number' min='0' max='23' data-id='"+i+"' class='time-number-input arrival-hour' value='"+this.stations[i].arrivalTime.getHours()+"'>";
+			var arrivalMinutesEL = "<input type='number' min='0' max='59' data-id='"+i+"' class='time-number-input arrival-minute' value='"+this.stations[i].arrivalTime.getMinutes()+"'>";
+			var arrival = arrivalHoursEL + " : " + arrivalMinutesEL;
+			if (i !== 0 && i !== this.stations.length - 1) {
+				var stayTimeEl = "<input class='stay-time time-number-input' data-id='"+i+"' type='number' value='"+ this.stations[i].stayingTime +"'> мин.";
+				var departureTimeEl = "<span class='departure-time' data-id='"+i+"'>"+ this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes() +"</span>";
 			}
-			var arrivalTime = timeForInput(this.stations[i].arrivalTime.getHours(), this.stations[i].arrivalTime.getMinutes());
+			else {
+				var stayTimeEl = "";
+				var departureTimeEl = "";
+			}
+			if (i !== this.stations.length - 1) {
+				var newStationWay = millisecondToTime(this.stations[i].nextStationWay);
+			}
+			else {
+				var newStationWay = "";
+			}
 
 			$ui.table.append("<tr class='tt-row'><td>"+ (i + 1) +"</td><td>"+ this.stations[i].name +
-				"</td><td><input class='arrival-time' data-id='"+i+"' type='time' value='"+ arrivalTime +"'>"
-				+"</td><td class='departure-time' data-id='"+i+"'>"
-				+ this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes() 
-				+"</td><td><input class='stay-time' data-id='"+i+"' type='number' value='"+ this.stations[i].stayingTime +
-				"'></td><td class='station-way' data-id='"+i+"'>"+ newStationWay +"</td></tr>");
+				"</td><td>" + arrival + "</td><td>"+ departureTimeEl +"</td><td>"+ stayTimeEl +
+				"</td><td class='station-way' data-id='"+i+"'>"+ newStationWay +"</td></tr>");
 		};
 		$(".stay-time").change(function() {
 			var id = $(this).data("id");
@@ -110,11 +122,29 @@ var Table = function(name, firstStation, lastStation) {
 			activeTable.renderStationWay();
 			activeTable.renderDepartureTime();
 		});
-		$(".arrival-time").change(function() {
+		$(".arrival-hour").change(function() {
 			var id = $(this).data("id");
-			var time = $(this).val();
-			var hours = parseInt(time[0] + time[1]);
-			var minutes = parseInt(time[3] + time[4]);
+			
+			var hours = parseInt($(this).val());
+			var minutes = parseInt($(".arrival-minute[data-id='"+ id +"']").val());
+			activeTable.stations[id].arrivalTimeChange(hours, minutes);
+			activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
+			if (activeTable.stations[id].nextStationWay < 0 || activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime()) {
+				activeTable.sort();
+				activeTable.renderAll();
+			}
+			else {
+				activeTable.sort();
+				activeTable.renderStationWay();
+				activeTable.renderDepartureTime();				
+			}
+
+		});
+		$(".arrival-minute").change(function() {
+			var id = $(this).data("id");
+			
+			var hours = parseInt($(".arrival-hour[data-id='"+ id +"']").val());
+			var minutes = parseInt($(this).val());
 			activeTable.stations[id].arrivalTimeChange(hours, minutes);
 			activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
 			if (activeTable.stations[id].nextStationWay < 0 || activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime()) {
@@ -134,12 +164,17 @@ var Table = function(name, firstStation, lastStation) {
 			var newStationWay = millisecondToTime(this.stations[i].nextStationWay);
 			$(".station-way[data-id='"+i+"']").html(newStationWay);
 		}
-		$(".station-way[data-id='"+ (this.stations.length - 1)+"']").html("Станция прибытия");
+		$(".station-way[data-id='"+ (this.stations.length - 1)+"']").html("");
 	}
 	this.renderDepartureTime = function() {
 		for (var i = 0; i < this.stations.length; i++) {
 			//var newStationWay = millisecondToTime(this.stations[i].nextStationWay);
-			$(".departure-time[data-id='"+i+"']").html(this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes());
+			if (i === this.stations.length - 1) {
+				$(".departure-time[data-id='"+i+"']").html("");
+			}
+			else {
+				$(".departure-time[data-id='"+i+"']").html(this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes());
+			}
 		}
 		
 	}
@@ -154,8 +189,9 @@ var Table = function(name, firstStation, lastStation) {
 				}
 			}
 		}
-		this.stations[0].stayingTime = "Станция отправления";
-		this.stations[this.stations.length - 1].stayingTime = "Станция прибытия";
+		//this.stations[0].stayingTime = "Станция отправления";
+		//this.stations[this.stations.length - 1].stayingTime = "Станция прибытия";
+		//this.stations[this.stations.length - 1].stayingTime = "Станция прибытия";
 
 		for (var i = 0; i < count; i++) {
 			this.stations[i].nextStationWay = this.stations[i + 1].arrivalTime.getTime() - this.stations[i].departureTime.getTime();
@@ -187,7 +223,7 @@ var activeTable = tables[0];
 
 function board(activeTable) {
 	//console.log("board");
-	$ui.board.empty();
+	$ui.board.html("Расписание активно");
 	var time = new Date().getTime();
 	for (var i = 0; i < activeTable.stations.length; i++) {
 		var remainingMinutesж
@@ -210,13 +246,33 @@ function board(activeTable) {
 $(document).ready(function() {
 	activeTable.renderAll();
 	fillSelect();
-	board(activeTable);
-	setInterval("board(activeTable)", 30000);
+	var boardIntervalID;
+	var interval = 1000;
+	function restartBoard() {
+		clearInterval(boardIntervalID);
+		$ui.board.empty();
+		boardIntervalID = setInterval("board(activeTable)", interval);	
+	}
+	function clearBoard() {
+		clearInterval(boardIntervalID);
+		$ui.board.empty();
+	}
+	//var tableActive = false;
+	$ui.startTable.click(function() {
+		//tableActive = true;
+		board(activeTable);
+		boardIntervalID = setInterval("board(activeTable)", interval);
+	});
+	$ui.stopTable.click(function() {
+		clearBoard();
+	});
 
 	$ui.selectTable.change(function() {
 		var id = $(this).children("option:selected").attr("value");
 		activeTable = tables[id];
 		activeTable.renderAll();
+		//if (tableActive) restartBoard();
+		clearBoard();
 	});
 	$ui.newTable.click(function() {
 		$ui.newTableModal.show();
@@ -227,6 +283,8 @@ $(document).ready(function() {
 		activeTable = tables[tables.length - 1];
 		activeTable.renderAll();
 		fillSelect();
+		//if (tableActive) restartBoard();
+		clearBoard();
 		$ui.selectTable.children("option[value='"+(tables.length - 1)+"']").prop('selected', true);
 		$ui.newTableModal.hide();
 	});

@@ -27,3 +27,6 @@ body {
 	padding: 10px;
 	border: 1px #000000 solid;
 }
+.time-number-input {
+	width: 35px;
+}
