@@ -134,13 +134,13 @@ var Table = function(name, firstStation, lastStation) {
 			else {
 				activeTable.stations[id].nextStationWay = 0;
 			}
-			
-			if (activeTable.stations[id].nextStationWay < 0 || activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime()) {
-				activeTable.sort();
+			activeTable.sort();
+			if (activeTable.stations[id].nextStationWay < 0 || (activeTable.stations[id - 1] && activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime())) {
+				
 				activeTable.renderAll();
 			}
 			else {
-				activeTable.sort();
+				
 				activeTable.renderStationWay();
 				activeTable.renderDepartureTime();				
 			}
