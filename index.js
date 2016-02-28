@@ -16,6 +16,9 @@ var ui = {
 	newStationOk: "#new-station-ok",
 	newStationNo: "#new-station-no",
 	delStationModal: "#del-station-modal",
+	delStationSelect: "#del-station-select",
+	delStationOk: "#del-station-ok",
+	delStationNo: "#del-station-no",
 	startTable: "#start-table",
 	stopTable: "#stop-table",
 	board: "#board",
@@ -337,6 +340,24 @@ $(document).ready(function() {
 	$ui.newStationNo.click(function() {
 		$ui.newStationModal.hide();
 	});
-
+	$ui.deleteStation.click(function() {
+		$ui.delStationSelect.empty();
+		for (var i = 0; i < activeTable.stations.length; i++) {
+			//activeTable.stations[i]
+			$ui.delStationSelect.append("<option value='"+i+"'>"+ activeTable.stations[i].name +"</option>");
+		};
+		$ui.delStationModal.show();
+	});
+	$ui.delStationNo.click(function() {
+		$ui.delStationModal.hide();
+	});
+	$ui.delStationOk.click(function() {
+		var id = $ui.delStationSelect.children("option:selected").attr("value");
+		console.log(id);
+		activeTable.stations.splice(id, 1);
+		activeTable.sort();
+		activeTable.renderAll();
+		$ui.delStationModal.hide();
+	});
 });
 
