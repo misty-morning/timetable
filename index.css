@@ -68,6 +68,9 @@ input[type="text"], input[type="time"], input[type="number"] {
 
 	margin-bottom: 20px;
 }
+.board__head {
+	margin: 5px 0px;
+}
 .select-block {
 	position: relative;
 
