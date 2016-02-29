@@ -1,6 +1,20 @@
+@font-face {
+  font-family: "Plumbc";
+  font-weight: normal;
+  src: url('fonts/plumbc__.eot');
+  src: local('plumbc'), url('fonts/plumbc__.ttf') format('truetype');
+}
+@font-face {
+  font-family: "PlumbcBold";
+  font-weight: bold;
+  src: url('../fonts/plumbc-b.eot');
+  src: local('plumbc'), url('fonts/plumbc-b.ttf') format('truetype');
+}
 body {
+	font-family: Plumbc, sans-serif;
 	padding: 20px;
 	color: #000000;
+	font-size: 16px;
 }
 button {
 	color: #000000;
@@ -59,11 +73,11 @@ input[type="text"], input[type="time"], input[type="number"] {
 .board {
 	max-width: 800px;
 	height: 20px;
-	padding: 5px;
+	padding: 10px 10px 4px 10px;
 	border: 2px #000000 solid;
 	border-radius: 4px;
 	background-color: #000000;
-	font-weight: bold;
+	font-family: PlumbcBold, sans-serif;
 	color: #1D981F;
 
 	margin-bottom: 20px;
