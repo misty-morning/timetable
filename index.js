@@ -327,7 +327,9 @@ $(document).ready(function() {
 		//if (tableActive) restartBoard();
 		clearBoard();
 		$ui.selectTable.children("option[value='"+(tables.length - 1)+"']").prop('selected', true);
+
 		$ui.newTableModal.hide();
+		$ui.tableNameInput.val("")
 	});
 	$ui.newTableNo.click(function() {
 		$ui.newTableModal.hide();
@@ -370,7 +372,11 @@ $(document).ready(function() {
 		//console.log(hours + minutes);
 		activeTable.add(new Station(name, hours, minutes, stay));
 		activeTable.renderAll();
+
 		$ui.newStationModal.hide();
+		$ui.stationNameInput.val("");
+		$ui.stationTimeInput.val("");
+		$ui.stationStayInput.val("");
 	});
 	$ui.newStationNo.click(function() {
 		$ui.newStationModal.hide();
