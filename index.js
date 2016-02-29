@@ -318,6 +318,8 @@ $(document).ready(function() {
 	});
 	$ui.newTable.click(function() {
 		$ui.newTableModal.show();
+		$ui.newTableWarn.hide();
+		$ui.newTableWarn.empty();
 	});
 	$ui.newTableOk.click(function() {
 		if ($ui.tableNameInput.val() !== "") {
@@ -374,8 +376,11 @@ $(document).ready(function() {
 
 	$ui.newStation.click(function() {
 		$ui.newStationModal.show();
+		$ui.newStationWarn.hide();
+		$ui.newStationWarn.empty();
 	});
 	$ui.newStationOk.click(function() {
+
 		if ($ui.stationTimeInput.val() !== "" && $ui.stationNameInput.val() !== "" && $ui.stationStayInput.val() !== "") {
 			$ui.newStationWarn.hide();
 			$ui.newStationWarn.empty();

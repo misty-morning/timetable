@@ -86,8 +86,9 @@ input[type="text"], input[type="time"], input[type="number"] {
 	display: none;
 	position: absolute;
 	background-color: #999999;
-	padding: 10px;
-	border: 1px #000000 solid;
+	padding: 15px;
+	border: 2px #000000 solid;
+	border-radius: 4px;
 }
 .time-number-input {
 	width: 35px;
