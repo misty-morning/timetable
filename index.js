@@ -8,6 +8,7 @@ var ui = {
 	tableNameInput: "#table-name-input",
 	newTableOk: "#new-table-ok",
 	newTableNo: "#new-table-no",
+	newTableWarn: "#new-table-warn",
 
 	delTableModal: "#del-table-modal",
 	delTableSelect: "#del-table-select",
@@ -22,6 +23,7 @@ var ui = {
 	stationStayInput: "#station-stay-input",
 	newStationOk: "#new-station-ok",
 	newStationNo: "#new-station-no",
+	newStationWarn: "#new-station-warn",
 
 	delStationModal: "#del-station-modal",
 	delStationSelect: "#del-station-select",
@@ -318,18 +320,28 @@ $(document).ready(function() {
 		$ui.newTableModal.show();
 	});
 	$ui.newTableOk.click(function() {
-		var name = $ui.tableNameInput.val();
-		tables.push(new Table(name));
-		activeTable = tables[tables.length - 1];
-		activeTable.id = tables.length - 1;
-		activeTable.renderAll();
-		fillSelect();
-		//if (tableActive) restartBoard();
-		clearBoard();
-		$ui.selectTable.children("option[value='"+(tables.length - 1)+"']").prop('selected', true);
+		if ($ui.tableNameInput.val() !== "") {
+			$ui.newTableWarn.hide();
+			$ui.newTableWarn.empty();
 
-		$ui.newTableModal.hide();
-		$ui.tableNameInput.val("")
+			var name = $ui.tableNameInput.val();
+			tables.push(new Table(name));
+			activeTable = tables[tables.length - 1];
+			activeTable.id = tables.length - 1;
+			activeTable.renderAll();
+			fillSelect();
+			//if (tableActive) restartBoard();
+			clearBoard();
+			$ui.selectTable.children("option[value='"+(tables.length - 1)+"']").prop('selected', true);
+
+			$ui.newTableModal.hide();
+			$ui.tableNameInput.val("");
+		}
+		else {
+			$ui.newTableWarn.show();
+			$ui.newTableWarn.html("Введите имя");
+		}
+
 	});
 	$ui.newTableNo.click(function() {
 		$ui.newTableModal.hide();
@@ -364,19 +376,28 @@ $(document).ready(function() {
 		$ui.newStationModal.show();
 	});
 	$ui.newStationOk.click(function() {
-		var name = $ui.stationNameInput.val();
-		var time = $ui.stationTimeInput.val();
-		var hours = parseInt(time[0] + time[1]);
-		var minutes = parseInt(time[3] + time[4]);
-		var stay = parseInt($ui.stationStayInput.val());
-		//console.log(hours + minutes);
-		activeTable.add(new Station(name, hours, minutes, stay));
-		activeTable.renderAll();
+		if ($ui.stationTimeInput.val() !== "" && $ui.stationNameInput.val() !== "" && $ui.stationStayInput.val() !== "") {
+			$ui.newStationWarn.hide();
+			$ui.newStationWarn.empty();
+			var name = $ui.stationNameInput.val();
+			var time = $ui.stationTimeInput.val();
+			var hours = parseInt(time[0] + time[1]);
+			var minutes = parseInt(time[3] + time[4]);
+			var stay = parseInt($ui.stationStayInput.val());
+			//console.log(hours + minutes);
+			activeTable.add(new Station(name, hours, minutes, stay));
+			activeTable.renderAll();
 
-		$ui.newStationModal.hide();
-		$ui.stationNameInput.val("");
-		$ui.stationTimeInput.val("");
-		$ui.stationStayInput.val("");
+			$ui.newStationModal.hide();
+			$ui.stationNameInput.val("");
+			$ui.stationTimeInput.val("");
+			$ui.stationStayInput.val("");
+		}
+		else {
+			$ui.newStationWarn.show();
+			$ui.newStationWarn.html("Заполните все поля");
+		}
+
 	});
 	$ui.newStationNo.click(function() {
 		$ui.newStationModal.hide();

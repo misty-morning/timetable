@@ -15,8 +15,12 @@
 			<label for="table-name-input">Имя</label>
 			<br>
 			<input id="table-name-input" type="text">
-			<button id="new-table-ok">OK</button>
-			<button id="new-table-no">Отмена</button>
+			<p id="new-table-warn" class="warn">TEST</p>
+			<div class="modal-end-btns">
+				<button id="new-table-ok">OK</button>
+				<button id="new-table-no">Отмена</button>	
+			</div>
+
 		</div>
 		<div id="del-table-modal" class="modal">
 			<p>
@@ -26,8 +30,10 @@
 				<option disabled="disabled">Расписание</option>
 			</select>
 			<br>
-			<button id="del-table-ok">OK</button>
-			<button id="del-table-no">Отмена</button>		
+			<div class="modal-end-btns">
+				<button id="del-table-ok">OK</button>
+				<button id="del-table-no">Отмена</button>
+			</div>		
 		</div>	
 		<span>Расписание</span>
 		<select id="select-table">
@@ -54,8 +60,11 @@
 				<br>
 				<input id="station-stay-input" class="time-number-input" type="number">
 				<br>
-				<button id="new-station-ok">OK</button>
-				<button id="new-station-no">Отмена</button>
+				<p id="new-station-warn" class="warn">TEST</p>
+				<div class="modal-end-btns">
+					<button id="new-station-ok">OK</button>
+					<button id="new-station-no">Отмена</button>
+				</div>
 			</div>
 			<div id="del-station-modal" class="modal">
 				<p>
@@ -64,9 +73,10 @@
 				<select id="del-station-select">
 					<option disabled="disabled">Станция</option>
 				</select>
-				<br>
-				<button id="del-station-ok">OK</button>
-				<button id="del-station-no">Отмена</button>
+				<div class="modal-end-btns">
+					<button id="del-station-ok">OK</button>
+					<button id="del-station-no">Отмена</button>
+				</div>
 			</div>
 			<button id="new-station">Добавить остановку</button>
 			<button id="delete-station">Удалить</button>
