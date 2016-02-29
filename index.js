@@ -137,35 +137,67 @@ var Table = function(name, firstStation, lastStation) {
 			activeTable.renderDepartureTime();
 		});
 		function setNewArrivalTime(id, hours, minutes) {
-			activeTable.stations[id].arrivalTimeChange(hours, minutes);
-			if (id !== activeTable.stations.length - 1) {
-				activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
+			var newTime = new Date();
+			newTime.setHours(hours, 0);
+			newTime.setMinutes(minutes, 0);
+			var newDepTimeMs = newTime.getTime() + (activeTable.stations[id].stayingTime*1000*60);
+			if (activeTable.stations[id + 1] && newDepTimeMs >= activeTable.stations[id + 1].arrivalTime.getTime()) {
+				alert("Неверное время");
+				return false;
+			}
+			else if (activeTable.stations[id - 1] && newTime.getTime() <= activeTable.stations[id - 1].departureTime.getTime()) {
+				alert("Неверное время");
+				return false;
 			}
 			else {
-				activeTable.stations[id].nextStationWay = 0;
+				activeTable.stations[id].arrivalTimeChange(hours, minutes);
+
+				if (id !== activeTable.stations.length - 1) {
+					activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
+				}
+				else {
+					activeTable.stations[id].nextStationWay = 0;
+				}
+				activeTable.sort();
+				if (activeTable.stations[id].nextStationWay < 0 || (activeTable.stations[id - 1] && activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime())) {
+					//if (activeTable.stations[id].departureTime.getTime() > activeTable.stations[id + 1].arrivalTime.getTime() && activeTable.stations[id].departureTime.getTime() < (activeTable.stations[id + 1].arrivalTime.getTime() + activeTable.stations[id].stayingTime)) {
+	/*				if (activeTable.stations[id].departureTime.getTime() > activeTable.stations[id + 1].arrivalTime.getTime()) {
+
+						alert("Неправильное время");
+					}
+					else {
+						activeTable.renderAll();
+					}*/
+					activeTable.renderAll();
+				}
+				else {
+					
+					activeTable.renderStationWay();
+					activeTable.renderDepartureTime();				
+				}
+				return true;
 			}
-			activeTable.sort();
-			if (activeTable.stations[id].nextStationWay < 0 || (activeTable.stations[id - 1] && activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime())) {
-				
-				activeTable.renderAll();
-			}
-			else {
-				
-				activeTable.renderStationWay();
-				activeTable.renderDepartureTime();				
-			}
+
 		}
 		$(".arrival-hour").change(function() {
 			var id = $(this).data("id");
 			var hours = parseInt($(this).val());
 			var minutes = parseInt($(".arrival-minute[data-id='"+ id +"']").val());
-			setNewArrivalTime(id, hours, minutes);
+			var timeChanged = setNewArrivalTime(id, hours, minutes);
+			if (!timeChanged) {
+				$(this).val(activeTable.stations[id].arrivalTime.getHours());
+				$(".arrival-minute[data-id='"+ id +"']").val(activeTable.stations[id].arrivalTime.getMinutes())
+			}
 		});
 		$(".arrival-minute").change(function() {
 			var id = $(this).data("id");
 			var hours = parseInt($(".arrival-hour[data-id='"+ id +"']").val());
 			var minutes = parseInt($(this).val());
-			setNewArrivalTime(id, hours, minutes);
+			var timeChanged = setNewArrivalTime(id, hours, minutes);
+			if (!timeChanged) {
+				$(this).val(activeTable.stations[id].arrivalTime.getMinutes());
+				$(".arrival-hour[data-id='"+ id +"']").val(activeTable.stations[id].arrivalTime.getHours())
+			}
 		});
 	}
 	this.renderStationWay = function() {
