@@ -110,8 +110,8 @@ var Table = function(name, firstStation, lastStation) {
 	this.renderAll = function() {
 		$(".tt-row").remove();
 		for (var i = 0; i < this.stations.length; i++) {
-			var arrivalHoursEL = "<input type='number' min='0' max='23' data-id='"+i+"' class='time-number-input arrival-hour' value='"+ this.stations[i].arrivalTime.getHours()+"'>";
-			var arrivalMinutesEL = "<input type='number' min='0' max='59' data-id='"+i+"' class='time-number-input arrival-minute' value='"+this.stations[i].arrivalTime.getMinutes()+"'>";
+			var arrivalHoursEL = "<input type='number' min='0' max='23' data-id='"+i+"' class='time-number-input arrival-hour' value='"+ timePrefix(this.stations[i].arrivalTime.getHours())+"'>";
+			var arrivalMinutesEL = "<input type='number' min='0' max='59' data-id='"+i+"' class='time-number-input arrival-minute' value='"+timePrefix(this.stations[i].arrivalTime.getMinutes())+"'>";
 			var arrival = arrivalHoursEL + " : " + arrivalMinutesEL;
 			if (i !== 0 && i !== this.stations.length - 1) {
 				var stayTimeEl = "<input class='stay-time time-number-input' data-id='"+i+"' min='0' type='number' value='"+ this.stations[i].stayingTime +"'> мин.";
@@ -193,6 +193,7 @@ var Table = function(name, firstStation, lastStation) {
 				$(this).val(activeTable.stations[id].arrivalTime.getHours());
 				$(".arrival-minute[data-id='"+ id +"']").val(activeTable.stations[id].arrivalTime.getMinutes())
 			}
+			$(this).val(timePrefix($(this).val()));
 		});
 		$(".arrival-minute").change(function() {
 			var id = $(this).data("id");
@@ -203,6 +204,7 @@ var Table = function(name, firstStation, lastStation) {
 				$(this).val(activeTable.stations[id].arrivalTime.getMinutes());
 				$(".arrival-hour[data-id='"+ id +"']").val(activeTable.stations[id].arrivalTime.getHours())
 			}
+			$(this).val(timePrefix($(this).val()));
 		});
 	}
 	this.renderStationWay = function() {
