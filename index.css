@@ -70,6 +70,10 @@ input[type="text"], input[type="time"], input[type="number"] {
 	border: 2px #000000 solid;
 	border-radius: 4px;	
 }
+input[disabled], button[disabled], select[disabled] {
+	border: 2px solid #e5e5e5;
+	color: #e5e5e5;
+}
 .board {
 	max-width: 800px;
 	height: 20px;

@@ -110,11 +110,11 @@ var Table = function(name, firstStation, lastStation) {
 	this.renderAll = function() {
 		$(".tt-row").remove();
 		for (var i = 0; i < this.stations.length; i++) {
-			var arrivalHoursEL = "<input type='number' min='0' max='23' data-id='"+i+"' class='time-number-input arrival-hour' value='"+ timePrefix(this.stations[i].arrivalTime.getHours())+"'>";
-			var arrivalMinutesEL = "<input type='number' min='0' max='59' data-id='"+i+"' class='time-number-input arrival-minute' value='"+timePrefix(this.stations[i].arrivalTime.getMinutes())+"'>";
+			var arrivalHoursEL = "<input type='number' min='0' max='23' data-id='"+i+"' class='time-number-input arrival-hour management-el' value='"+ timePrefix(this.stations[i].arrivalTime.getHours())+"'>";
+			var arrivalMinutesEL = "<input type='number' min='0' max='59' data-id='"+i+"' class='time-number-input arrival-minute management-el' value='"+timePrefix(this.stations[i].arrivalTime.getMinutes())+"'>";
 			var arrival = arrivalHoursEL + " : " + arrivalMinutesEL;
 			if (i !== 0 && i !== this.stations.length - 1) {
-				var stayTimeEl = "<input class='stay-time time-number-input' data-id='"+i+"' min='0' type='number' value='"+ this.stations[i].stayingTime +"'> мин.";
+				var stayTimeEl = "<input class='stay-time time-number-input management-el' data-id='"+i+"' min='0' type='number' value='"+ this.stations[i].stayingTime +"'> мин.";
 				var departureTimeEl = "<span class='departure-time' data-id='"+i+"'>"+ this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes() +"</span>";
 			}
 			else {
@@ -323,9 +323,21 @@ $(document).ready(function() {
 		//tableActive = true;
 		board(activeTable);
 		boardIntervalID = setInterval("board(activeTable)", interval);
+		$(".management-el").prop("disabled", true);
+		$ui.newTable.prop("disabled", true);
+		$ui.deleteTable.prop("disabled", true);
+		$ui.newStation.prop("disabled", true);
+		$ui.deleteStation.prop("disabled", true);
+		$ui.selectTable.prop("disabled", true);
 	});
 	$ui.stopTable.click(function() {
 		clearBoard();
+		$(".management-el").prop("disabled", false);
+		$ui.newTable.prop("disabled", false);
+		$ui.deleteTable.prop("disabled", false);
+		$ui.newStation.prop("disabled", false);
+		$ui.deleteStation.prop("disabled", false);
+		$ui.selectTable.prop("disabled", false);
 	});
 
 	$ui.selectTable.change(function() {
