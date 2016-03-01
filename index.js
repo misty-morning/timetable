@@ -329,6 +329,8 @@ $(document).ready(function() {
 		$ui.newStation.prop("disabled", true);
 		$ui.deleteStation.prop("disabled", true);
 		$ui.selectTable.prop("disabled", true);
+		$ui.newStationModal.hide();
+		$ui.newTableModal.hide();
 	});
 	$ui.stopTable.click(function() {
 		clearBoard();
