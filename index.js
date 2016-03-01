@@ -136,10 +136,19 @@ var Table = function(name, firstStation, lastStation) {
 			var id = $(this).data("id");
 			var minutes = parseInt($(this).val());
 			//console.log(id);
-			activeTable.stations[id].stayChange(minutes);
-			activeTable.sort();
-			activeTable.renderStationWay();
-			activeTable.renderDepartureTime();
+			var newTime = new Station("test", activeTable.stations[id].arrivalTime.getHours(), activeTable.stations[id].arrivalTime.getMinutes(), activeTable.stations[id].stayingTime);
+			newTime.stayChange(minutes);
+			if (activeTable.stations[id + 1] && newTime.departureTime.getTime() >= activeTable.stations[id + 1].arrivalTime.getTime()) {
+				alert("Неверное время");
+				$(this).val(activeTable.stations[id].stayingTime);
+			}
+			else {
+				activeTable.stations[id].stayChange(minutes);
+				activeTable.sort();
+				activeTable.renderStationWay();
+				activeTable.renderDepartureTime();				
+			}
+
 		});
 		function setNewArrivalTime(id, hours, minutes) {
 			var newTime = new Date();
