@@ -120,3 +120,6 @@ input[type="text"], input[type="time"], input[type="number"] {
 .table-block__table th {
 	text-align: left;
 }
+.modal-input {
+	margin-bottom: 5px;
+}

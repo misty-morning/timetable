@@ -21,6 +21,7 @@ var ui = {
 	stationNameInput: "#station-name-input",
 	stationTimeInput: "#station-time-input",
 	stationStayInput: "#station-stay-input",
+	stationStayInputLabel: ".station-stay-input-label",
 	newStationOk: "#new-station-ok",
 	newStationNo: "#new-station-no",
 	newStationWarn: "#new-station-warn",
@@ -378,8 +379,16 @@ $(document).ready(function() {
 		$ui.newStationModal.show();
 		$ui.newStationWarn.hide();
 		$ui.newStationWarn.empty();
+		$ui.stationStayInput.show();
+		$ui.stationStayInputLabel.show();
+		if (activeTable.stations.length < 2) {
+			$ui.stationStayInput.val(0);
+			$ui.stationStayInput.hide();
+			$ui.stationStayInputLabel.hide();
+		}
 	});
 	$ui.newStationOk.click(function() {
+
 
 		if ($ui.stationTimeInput.val() !== "" && $ui.stationNameInput.val() !== "" && $ui.stationStayInput.val() !== "") {
 			$ui.newStationWarn.hide();
@@ -388,6 +397,7 @@ $(document).ready(function() {
 			var time = $ui.stationTimeInput.val();
 			var hours = parseInt(time[0] + time[1]);
 			var minutes = parseInt(time[3] + time[4]);
+
 			var stay = parseInt($ui.stationStayInput.val());
 			//console.log(hours + minutes);
 			activeTable.add(new Station(name, hours, minutes, stay));
