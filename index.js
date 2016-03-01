@@ -61,6 +61,11 @@ function timeForInput(hours, minutes) {
 
 	return hours + ":" + minutes;
 }
+function timePrefix(time) {
+	time = time.toString();
+	if (time.length == 1) time = '0' + time;
+	return time;
+}
 var Station = function(name, arrivalHour, arrivalMin, stayingTime) {
 	this.name = name;
 	this.arrivalTime = new Date();
@@ -105,10 +110,7 @@ var Table = function(name, firstStation, lastStation) {
 	this.renderAll = function() {
 		$(".tt-row").remove();
 		for (var i = 0; i < this.stations.length; i++) {
-			
-
-
-			var arrivalHoursEL = "<input type='number' min='0' max='23' data-id='"+i+"' class='time-number-input arrival-hour' value='"+this.stations[i].arrivalTime.getHours()+"'>";
+			var arrivalHoursEL = "<input type='number' min='0' max='23' data-id='"+i+"' class='time-number-input arrival-hour' value='"+ this.stations[i].arrivalTime.getHours()+"'>";
 			var arrivalMinutesEL = "<input type='number' min='0' max='59' data-id='"+i+"' class='time-number-input arrival-minute' value='"+this.stations[i].arrivalTime.getMinutes()+"'>";
 			var arrival = arrivalHoursEL + " : " + arrivalMinutesEL;
 			if (i !== 0 && i !== this.stations.length - 1) {
@@ -248,21 +250,36 @@ var Table = function(name, firstStation, lastStation) {
 	//this.renderAll();
 }
 
-//console.log(time.getMilliseconds());
+function saveAllTables() {
+	//var jsonTables = JSON.stringify(tables);
+	//localStorage.setItem("tables", jsonTables);
+/*	for (var i = 0; i < tables.length; i++) {
+		var jsonTable = JSON.stringify(tables[i]);
+		localStorage.setItem("table" + i, jsonTable);
+		localStorage.setItem("activeTableId", activeTable.id);
+	};*/
+}
+if (window.sessionStorage && window.localStorage && localStorage.getItem("tables")) {
 
-var mskSpb = new Table("Москва - Спб", new Station("Москва", 8, 0), new Station("Санкт-Петербург", 23, 30));
-mskSpb.add(new Station("Тверь", 10, 15, 20));
-mskSpb.add(new Station("Бологое", 13, 37, 7));
-mskSpb.add(new Station("Окуловка", 17, 33, 4));
-mskSpb.add(new Station("Малая Вишера", 20, 40, 5));
+}
+else {
+	var mskSpb = new Table("Москва - Спб", new Station("Москва", 8, 0), new Station("Санкт-Петербург", 23, 30));
+	mskSpb.add(new Station("Тверь", 10, 15, 20));
+	mskSpb.add(new Station("Бологое", 13, 37, 7));
+	mskSpb.add(new Station("Окуловка", 17, 33, 4));
+	mskSpb.add(new Station("Малая Вишера", 20, 40, 5));
 
-var mskPod = new Table("Подольск - Москва", new Station("Подольск", 7, 10), new Station("Москва", 9, 0));
-mskPod.add(new Station("Царицыно", 8, 15, 3));
-mskPod.add(new Station("Красный строитель", 8, 37, 5));
+	var mskPod = new Table("Подольск - Москва", new Station("Подольск", 7, 10), new Station("Москва", 9, 0));
+	mskPod.add(new Station("Царицыно", 8, 15, 3));
+	mskPod.add(new Station("Красный строитель", 8, 37, 5));
 
-var tables = [mskSpb, mskPod];
-var activeTable = tables[0];
-activeTable.id = 0;
+	var tables = [mskSpb, mskPod];
+	var activeTable = tables[0];
+	activeTable.id = 0;
+
+}
+
+
 function board(activeTable) {
 	//console.log("board");
 	$ui.board.html("Расписание активно");
