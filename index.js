@@ -136,21 +136,22 @@ var Table = function(name, firstStation, lastStation) {
 			}
 
 		};
+		var tableObject = this;
 		$(".stay-time").change(function() {
 			var id = $(this).data("id");
 			var minutes = parseInt($(this).val());
 			//console.log(id);
-			var newTime = new Station("test", activeTable.stations[id].arrivalTime.getHours(), activeTable.stations[id].arrivalTime.getMinutes(), activeTable.stations[id].stayingTime);
+			var newTime = new Station("test", tableObject.stations[id].arrivalTime.getHours(), tableObject.stations[id].arrivalTime.getMinutes(), tableObject.stations[id].stayingTime);
 			newTime.stayChange(minutes);
-			if (activeTable.stations[id + 1] && newTime.departureTime.getTime() >= activeTable.stations[id + 1].arrivalTime.getTime()) {
+			if (tableObject.stations[id + 1] && newTime.departureTime.getTime() >= tableObject.stations[id + 1].arrivalTime.getTime()) {
 				alert("Неверное время");
-				$(this).val(activeTable.stations[id].stayingTime);
+				$(this).val(tableObject.stations[id].stayingTime);
 			}
 			else {
-				activeTable.stations[id].stayChange(minutes);
-				activeTable.sort();
-				activeTable.renderStationWay();
-				activeTable.renderDepartureTime();				
+				tableObject.stations[id].stayChange(minutes);
+				tableObject.sort();
+				tableObject.renderStationWay();
+				tableObject.renderDepartureTime();				
 			}
 
 		});
@@ -158,32 +159,32 @@ var Table = function(name, firstStation, lastStation) {
 			var newTime = new Date();
 			newTime.setHours(hours, 0);
 			newTime.setMinutes(minutes, 0);
-			var newDepTimeMs = newTime.getTime() + (activeTable.stations[id].stayingTime*1000*60);
-			if (activeTable.stations[id + 1] && newDepTimeMs >= activeTable.stations[id + 1].arrivalTime.getTime()) {
+			var newDepTimeMs = newTime.getTime() + (tableObject.stations[id].stayingTime*1000*60);
+			if (tableObject.stations[id + 1] && newDepTimeMs >= tableObject.stations[id + 1].arrivalTime.getTime()) {
 				alert("Неверное время");
 				return false;
 			}
-			else if (activeTable.stations[id - 1] && newTime.getTime() <= activeTable.stations[id - 1].departureTime.getTime()) {
+			else if (tableObject.stations[id - 1] && newTime.getTime() <= tableObject.stations[id - 1].departureTime.getTime()) {
 				alert("Неверное время");
 				return false;
 			}
 			else {
-				activeTable.stations[id].arrivalTimeChange(hours, minutes);
+				tableObject.stations[id].arrivalTimeChange(hours, minutes);
 
-				if (id !== activeTable.stations.length - 1) {
-					activeTable.stations[id].nextStationWay = activeTable.stations[id + 1].arrivalTime.getTime() - activeTable.stations[id].departureTime.getTime();
+				if (id !== tableObject.stations.length - 1) {
+					tableObject.stations[id].nextStationWay = tableObject.stations[id + 1].arrivalTime.getTime() - tableObject.stations[id].departureTime.getTime();
 				}
 				else {
-					activeTable.stations[id].nextStationWay = 0;
+					tableObject.stations[id].nextStationWay = 0;
 				}
-				activeTable.sort();
-				if (activeTable.stations[id].nextStationWay < 0 || (activeTable.stations[id - 1] && activeTable.stations[id].time < activeTable.stations[id - 1].departureTime.getTime())) {
-					activeTable.renderAll();
+				tableObject.sort();
+				if (tableObject.stations[id].nextStationWay < 0 || (tableObject.stations[id - 1] && tableObject.stations[id].time < tableObject.stations[id - 1].departureTime.getTime())) {
+					tableObject.renderAll();
 				}
 				else {
 					
-					activeTable.renderStationWay();
-					activeTable.renderDepartureTime();				
+					tableObject.renderStationWay();
+					tableObject.renderDepartureTime();				
 				}
 				return true;
 			}
@@ -195,8 +196,8 @@ var Table = function(name, firstStation, lastStation) {
 			var minutes = parseInt($(".arrival-minute[data-id='"+ id +"']").val());
 			var timeChanged = setNewArrivalTime(id, hours, minutes);
 			if (!timeChanged) {
-				$(this).val(activeTable.stations[id].arrivalTime.getHours());
-				$(".arrival-minute[data-id='"+ id +"']").val(activeTable.stations[id].arrivalTime.getMinutes())
+				$(this).val(tableObject.stations[id].arrivalTime.getHours());
+				$(".arrival-minute[data-id='"+ id +"']").val(tableObject.stations[id].arrivalTime.getMinutes())
 			}
 			$(this).val(timePrefix($(this).val()));
 		});
@@ -206,8 +207,8 @@ var Table = function(name, firstStation, lastStation) {
 			var minutes = parseInt($(this).val());
 			var timeChanged = setNewArrivalTime(id, hours, minutes);
 			if (!timeChanged) {
-				$(this).val(activeTable.stations[id].arrivalTime.getMinutes());
-				$(".arrival-hour[data-id='"+ id +"']").val(activeTable.stations[id].arrivalTime.getHours())
+				$(this).val(tableObject.stations[id].arrivalTime.getMinutes());
+				$(".arrival-hour[data-id='"+ id +"']").val(tableObject.stations[id].arrivalTime.getHours())
 			}
 			$(this).val(timePrefix($(this).val()));
 		});
