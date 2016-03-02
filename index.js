@@ -127,10 +127,16 @@ var Table = function(name, firstStation, lastStation) {
 			else {
 				var newStationWay = "";
 			}
+			if (i === 0) {
+				$ui.table.append("<tr class='tt-row'><td>"+ (i + 1) +"</td><td>"+ this.stations[i].name +
+					"</td><td></td><td>" + arrival + "</td><td>"+ stayTimeEl +
+					"</td><td class='station-way' data-id='"+i+"'>"+ newStationWay +"</td></tr>");			}
+			else {
+				$ui.table.append("<tr class='tt-row'><td>"+ (i + 1) +"</td><td>"+ this.stations[i].name +
+					"</td><td>" + arrival + "</td><td>"+ departureTimeEl +"</td><td>"+ stayTimeEl +
+					"</td><td class='station-way' data-id='"+i+"'>"+ newStationWay +"</td></tr>");				
+			}
 
-			$ui.table.append("<tr class='tt-row'><td>"+ (i + 1) +"</td><td>"+ this.stations[i].name +
-				"</td><td>" + arrival + "</td><td>"+ departureTimeEl +"</td><td>"+ stayTimeEl +
-				"</td><td class='station-way' data-id='"+i+"'>"+ newStationWay +"</td></tr>");
 		};
 		$(".stay-time").change(function() {
 			var id = $(this).data("id");
