@@ -252,7 +252,7 @@ var Table = function(name, firstStation, lastStation) {
 				}
 			}
 		}
-
+		this.stations[0].stayChange(0);
 		for (var i = 0; i < count; i++) {
 			this.stations[i].nextStationWay = this.stations[i + 1].arrivalTime.getTime() - this.stations[i].departureTime.getTime();
 		}
