@@ -188,6 +188,7 @@ var Table = function(name, firstStation, lastStation) {
 					tableObject.renderStationWay();
 					tableObject.renderDepartureTime();				
 				}
+				saveAllTables();
 				return true;
 			}
 
@@ -201,9 +202,6 @@ var Table = function(name, firstStation, lastStation) {
 				$(this).val(tableObject.stations[id].arrivalTime.getHours());
 				$(".arrival-minute[data-id='"+ id +"']").val(tableObject.stations[id].arrivalTime.getMinutes())
 			}
-			else {
-				saveAllTables();
-			}
 			$(this).val(timePrefix($(this).val()));
 		});
 		$(".arrival-minute").change(function() {
@@ -214,9 +212,6 @@ var Table = function(name, firstStation, lastStation) {
 			if (!timeChanged) {
 				$(this).val(tableObject.stations[id].arrivalTime.getMinutes());
 				$(".arrival-hour[data-id='"+ id +"']").val(tableObject.stations[id].arrivalTime.getHours())
-			}
-			else {
-				saveAllTables();
 			}
 			$(this).val(timePrefix($(this).val()));
 		});
