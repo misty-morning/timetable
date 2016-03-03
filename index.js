@@ -253,18 +253,46 @@ var Table = function(name, firstStation, lastStation) {
 		this.sort();
 	}
 }
-
+var tables = [];
 function saveAllTables() {
-	//var jsonTables = JSON.stringify(tables);
-	//localStorage.setItem("tables", jsonTables);
-/*	for (var i = 0; i < tables.length; i++) {
-		var jsonTable = JSON.stringify(tables[i]);
-		localStorage.setItem("table" + i, jsonTable);
-		localStorage.setItem("activeTableId", activeTable.id);
-	};*/
+	var storageData =  [];
+	for (var i = 0; i < tables.length; i++) {
+		storageData[i] = {
+			name: tables[i].name,
+			stations: [],
+		};
+		for (var j = 0; j < tables[i].stations.length; j++) {
+			var station = {
+				name: tables[i].stations[j].name,
+				arrivalHours: tables[i].stations[j].arrivalTime.getHours(),
+				arrivalMinutes: tables[i].stations[j].arrivalTime.getMinutes(),
+				stayingTime: tables[i].stations[j].stayingTime,
+			};
+			storageData[i].stations.push(station);
+		};
+	};
+	localStorage.setItem("tables", JSON.stringify(storageData));
+}
+function loadAllTables() {
+	//var json = localStorage.tables;
+	//console.log(json);
+	var storageData = $.parseJSON(localStorage.getItem('tables'));
+	tables = [];
+	console.log(storageData);
+	for (var i = 0; i < storageData.length; i++) {
+		//storageData[i]
+		tables[i] = new Table(storageData[i].name);
+		for (var j = 0; j < storageData[i].stations.length; j++) {
+			var stationData = storageData[i].stations[j];
+			tables[i].add(new Station(stationData.name, stationData.arrivalHours, stationData.arrivalMinutes, stationData.stayingTime));
+		};
+	};
+
 }
 if (window.sessionStorage && window.localStorage && localStorage.getItem("tables")) {
-
+	loadAllTables();
+	var activeTable = tables[0];
+	activeTable.id = 0;
 }
 else {
 	var mskSpb = new Table("Москва - Спб", new Station("Москва", 8, 0), new Station("Санкт-Петербург", 23, 30));
@@ -277,9 +305,11 @@ else {
 	mskPod.add(new Station("Царицыно", 8, 15, 3));
 	mskPod.add(new Station("Красный строитель", 8, 37, 5));
 
-	var tables = [mskSpb, mskPod];
+	tables = [mskSpb, mskPod];
 	var activeTable = tables[0];
 	activeTable.id = 0;
+	
+	saveAllTables();
 
 }
 
