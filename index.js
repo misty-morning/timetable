@@ -151,7 +151,9 @@ var Table = function(name, firstStation, lastStation) {
 				tableObject.stations[id].stayChange(minutes);
 				tableObject.sort();
 				tableObject.renderStationWay();
-				tableObject.renderDepartureTime();				
+				tableObject.renderDepartureTime();
+
+				saveAllTables();				
 			}
 
 		});
@@ -199,6 +201,9 @@ var Table = function(name, firstStation, lastStation) {
 				$(this).val(tableObject.stations[id].arrivalTime.getHours());
 				$(".arrival-minute[data-id='"+ id +"']").val(tableObject.stations[id].arrivalTime.getMinutes())
 			}
+			else {
+				saveAllTables();
+			}
 			$(this).val(timePrefix($(this).val()));
 		});
 		$(".arrival-minute").change(function() {
@@ -209,6 +214,9 @@ var Table = function(name, firstStation, lastStation) {
 			if (!timeChanged) {
 				$(this).val(tableObject.stations[id].arrivalTime.getMinutes());
 				$(".arrival-hour[data-id='"+ id +"']").val(tableObject.stations[id].arrivalTime.getHours())
+			}
+			else {
+				saveAllTables();
 			}
 			$(this).val(timePrefix($(this).val()));
 		});
@@ -278,7 +286,7 @@ function loadAllTables() {
 	//console.log(json);
 	var storageData = $.parseJSON(localStorage.getItem('tables'));
 	tables = [];
-	console.log(storageData);
+	//console.log(storageData);
 	for (var i = 0; i < storageData.length; i++) {
 		//storageData[i]
 		tables[i] = new Table(storageData[i].name);
@@ -306,6 +314,7 @@ else {
 	mskPod.add(new Station("Красный строитель", 8, 37, 5));
 
 	tables = [mskSpb, mskPod];
+
 	var activeTable = tables[0];
 	activeTable.id = 0;
 	
@@ -381,6 +390,8 @@ $(document).ready(function() {
 		$ui.newTableModal.show();
 		$ui.newTableWarn.hide();
 		$ui.newTableWarn.empty();
+
+		saveAllTables();
 	});
 	$ui.newTableOk.click(function() {
 		if ($ui.tableNameInput.val() !== "") {
@@ -398,6 +409,8 @@ $(document).ready(function() {
 
 			$ui.newTableModal.hide();
 			$ui.tableNameInput.val("");
+
+			saveAllTables();
 		}
 		else {
 			$ui.newTableWarn.show();
@@ -429,7 +442,7 @@ $(document).ready(function() {
 			activeTable.renderAll();
 		}
 		fillSelect();
-
+		saveAllTables();
 		$ui.delTableModal.hide();
 	});
 
@@ -458,6 +471,8 @@ $(document).ready(function() {
 			var stay = parseInt($ui.stationStayInput.val());
 			activeTable.add(new Station(name, hours, minutes, stay));
 			activeTable.renderAll();
+
+			saveAllTables();
 
 			$ui.newStationModal.hide();
 			$ui.stationNameInput.val("");
@@ -488,6 +503,7 @@ $(document).ready(function() {
 		activeTable.stations.splice(id, 1);
 		activeTable.sort();
 		activeTable.renderAll();
+		saveAllTables();
 		$ui.delStationModal.hide();
 	});
 });
