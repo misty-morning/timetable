@@ -280,6 +280,7 @@ function saveAllTables() {
 		};
 	};
 	localStorage.setItem("tables", JSON.stringify(storageData));
+	//
 }
 function loadAllTables() {
 	//var json = localStorage.tables;
@@ -297,10 +298,17 @@ function loadAllTables() {
 	};
 
 }
+function saveActiveTableId() {
+	localStorage.setItem("activeTableId", activeTable.id);
+}
 if (window.sessionStorage && window.localStorage && localStorage.getItem("tables")) {
 	loadAllTables();
-	var activeTable = tables[0];
-	activeTable.id = 0;
+/*	var activeTable = tables[0];
+	activeTable.id = 0;*/
+	var activeTableId = localStorage.getItem('activeTableId');
+	var activeTable = tables[activeTableId];
+	activeTable.id = activeTableId;
+
 }
 else {
 	var mskSpb = new Table("Москва - Спб", new Station("Москва", 8, 0), new Station("Санкт-Петербург", 23, 30));
@@ -346,6 +354,7 @@ function board(activeTable) {
 $(document).ready(function() {
 	activeTable.renderAll();
 	fillSelect();
+	$ui.selectTable.children("[value='"+ activeTableId +"']").prop("selected", true);
 	var boardIntervalID;
 	var interval = 1000;
 	function restartBoard() {
@@ -385,6 +394,7 @@ $(document).ready(function() {
 		activeTable.id = id;
 		activeTable.renderAll();
 		clearBoard();
+		saveActiveTableId();
 	});
 	$ui.newTable.click(function() {
 		$ui.newTableModal.show();
@@ -411,6 +421,7 @@ $(document).ready(function() {
 			$ui.tableNameInput.val("");
 
 			saveAllTables();
+			saveActiveTableId();
 		}
 		else {
 			$ui.newTableWarn.show();
@@ -443,6 +454,7 @@ $(document).ready(function() {
 		}
 		fillSelect();
 		saveAllTables();
+		saveActiveTableId();
 		$ui.delTableModal.hide();
 	});
 
