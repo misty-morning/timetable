@@ -77,13 +77,9 @@ var Station = function(name, arrivalHour, arrivalMin, stayingTime) {
 		this.departureTime.setMinutes(this.arrivalTime.getMinutes() + stayingTime);
 	}
 	this.stayingTime = Math.floor(((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60);
-	//console.log(this.stayingTime);
-	//console.log(this.stayingTime);
 	this.stayChange = function(minutes) {
-		//this.stayingTime = minutes;
 		this.departureTime.setMinutes(this.arrivalTime.getMinutes() + minutes);
 		this.stayingTime = Math.floor(((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60);
-		//console.log(this.stayingTime);
 
 	}
 	this.arrivalTimeChange = function(hours, minutes) {
@@ -92,7 +88,6 @@ var Station = function(name, arrivalHour, arrivalMin, stayingTime) {
 		this.time = this.arrivalTime.getTime();
 		this.departureTime.setHours(hours);
 		this.departureTime.setMinutes(this.arrivalTime.getMinutes() + this.stayingTime);
-		//this.stayingTime = ((this.departureTime.getTime() - this.arrivalTime.getTime()) / 1000) / 60;
 	}
 
 }
@@ -278,13 +273,9 @@ function saveAllTables() {
 	//
 }
 function loadAllTables() {
-	//var json = localStorage.tables;
-	//console.log(json);
 	var storageData = $.parseJSON(localStorage.getItem('tables'));
 	tables = [];
-	//console.log(storageData);
 	for (var i = 0; i < storageData.length; i++) {
-		//storageData[i]
 		tables[i] = new Table(storageData[i].name);
 		for (var j = 0; j < storageData[i].stations.length; j++) {
 			var stationData = storageData[i].stations[j];
@@ -298,8 +289,6 @@ function saveActiveTableId() {
 }
 if (window.sessionStorage && window.localStorage && localStorage.getItem("tables")) {
 	loadAllTables();
-/*	var activeTable = tables[0];
-	activeTable.id = 0;*/
 	var activeTableId = localStorage.getItem('activeTableId');
 	var activeTable = tables[activeTableId];
 	activeTable.id = activeTableId;
