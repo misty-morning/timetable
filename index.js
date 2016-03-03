@@ -270,7 +270,6 @@ function saveAllTables() {
 		};
 	};
 	localStorage.setItem("tables", JSON.stringify(storageData));
-	//
 }
 function loadAllTables() {
 	var storageData = $.parseJSON(localStorage.getItem('tables'));
