@@ -2,7 +2,7 @@
 	include 'db_config.php';
 ?>
 <?php
-/*	$dbc = mysqli_connect($db_host, $db_user, $db_password, $db_name) or die ('Ошибка соединения с MySQL-сервером');
+/*	
 
 	$test_query = "INSERT INTO `t_table`(`name`, `test`) VALUES ('hey', 'heey')";
 	$result = mysqli_query($dbc, $test_query) or die ('Ошибка при выполнении запроса к базе данных');

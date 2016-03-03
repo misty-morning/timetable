@@ -254,34 +254,21 @@ var Table = function(name, firstStation, lastStation) {
 	}
 }
 
-function saveAllTables() {
-	//var jsonTables = JSON.stringify(tables);
-	//localStorage.setItem("tables", jsonTables);
-/*	for (var i = 0; i < tables.length; i++) {
-		var jsonTable = JSON.stringify(tables[i]);
-		localStorage.setItem("table" + i, jsonTable);
-		localStorage.setItem("activeTableId", activeTable.id);
-	};*/
-}
-if (window.sessionStorage && window.localStorage && localStorage.getItem("tables")) {
 
-}
-else {
-	var mskSpb = new Table("Москва - Спб", new Station("Москва", 8, 0), new Station("Санкт-Петербург", 23, 30));
-	mskSpb.add(new Station("Тверь", 10, 15, 20));
-	mskSpb.add(new Station("Бологое", 13, 37, 7));
-	mskSpb.add(new Station("Окуловка", 17, 33, 4));
-	mskSpb.add(new Station("Малая Вишера", 20, 40, 5));
+var mskSpb = new Table("Москва - Спб", new Station("Москва", 8, 0), new Station("Санкт-Петербург", 23, 30));
+mskSpb.add(new Station("Тверь", 10, 15, 20));
+mskSpb.add(new Station("Бологое", 13, 37, 7));
+mskSpb.add(new Station("Окуловка", 17, 33, 4));
+mskSpb.add(new Station("Малая Вишера", 20, 40, 5));
 
-	var mskPod = new Table("Подольск - Москва", new Station("Подольск", 7, 10), new Station("Москва", 9, 0));
-	mskPod.add(new Station("Царицыно", 8, 15, 3));
-	mskPod.add(new Station("Красный строитель", 8, 37, 5));
+var mskPod = new Table("Подольск - Москва", new Station("Подольск", 7, 10), new Station("Москва", 9, 0));
+mskPod.add(new Station("Царицыно", 8, 15, 3));
+mskPod.add(new Station("Красный строитель", 8, 37, 5));
 
-	var tables = [mskSpb, mskPod];
-	var activeTable = tables[0];
-	activeTable.id = 0;
+var tables = [mskSpb, mskPod];
+var activeTable = tables[0];
+activeTable.id = 0;
 
-}
 
 
 function board(activeTable) {
