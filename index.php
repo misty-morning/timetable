@@ -2,17 +2,15 @@
 	include 'db_config.php';
 ?>
 <?php
-	//mysql_query("SET NAMES 'utf-8'");
-	header( 'Content-Type: text/html; charset=utf-8' );
 	$dbc = mysqli_connect($db_host, $db_user, $db_password, $db_name);
-	//mysql_select_db("firstdb",$db);
-	$charset = mysqli_set_charset('utf-8', $dbc);
+	$charset = mysqli_set_charset($dbc, "utf8");
+	setlocale(LC_ALL, 'ru_RU.65001', 'rus_RUS.65001', 'Russian_Russia. 65001', 'russian');
 	$error_messages = array();
 	if (!$charset) {
 		array_push($error_messages, "No charset set");
 	}
 	//mysqli_query("SET NAMES utf-8");
-	//setlocale(LC_ALL, 'ru_RU.65001', 'rus_RUS.65001', 'Russian_Russia. 65001', 'russian');
+	
 	if (!$dbc) {
 		array_push($error_messages, "No connection to the base");
 	}
@@ -47,7 +45,6 @@
  		<title>Расписание</title>
 	</head>
 <body>
-
 	<p class="server-errors">
 		<?php 
 			if ($error_messages) {
