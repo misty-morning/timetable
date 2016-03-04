@@ -16,19 +16,26 @@
 	$tables_query = "SELECT * FROM tables";
 	$tables_result = mysqli_query($dbc, $tables_query);
 	if (!$tables_result) {
-		array_push($error_messages, "The query hasn't handled");
+		array_push($error_messages, "tables query hasn't handled");
 	}
 
     if (mysqli_num_rows($tables_result) == 0) {
         array_push($error_messages, "No data has come");
     }
-
-	//$stations_query = "SELECT * FROM stations";
-	//$stations_result = mysqli_query($dbc, $stations_query) or die ('Ошибка при выполнении запроса к базе данных');
-
 	while ($row = mysqli_fetch_array($tables_result)) {
 		$tables[$row['id']] = $row['name'];
     }
+
+	$stations_query = "SELECT * FROM stations";
+	$stations_result = mysqli_query($dbc, $stations_query);
+	if (!$stations_result) {
+		array_push($error_messages, "stations query hasn't handled");
+	}
+
+	while ($row = mysqli_fetch_array($stations_result)) {
+		$stations[$row['id']] = $row['name'];
+    }
+
     mysqli_close($dbc);
 ?>
 <!DOCTYPE html>
@@ -63,6 +70,9 @@
 	<p> 
 		<?php 
 			foreach ($tables as $key => $value) {
+				echo $key . " " . $value . "<br>";
+			}
+			foreach ($stations as $key => $value) {
 				echo $key . " " . $value . "<br>";
 			}
 		?>
