@@ -247,8 +247,23 @@ var Table = function(name, firstStation, lastStation) {
 
 	}
 	this.add = function(station) {
-		this.stations.push(station);
-		this.sort();
+		var check = true;
+		for (var i = 0; i < this.stations.length; i++) {
+			if (station.arrivalTime.getTime() > this.stations[i].arrivalTime.getTime() && station.arrivalTime.getTime() < this.stations[i].departureTime.getTime()) {
+				check = false;
+				break;
+			}
+			
+		};
+		if (check) {
+			this.stations.push(station);
+			this.sort();
+			return true;
+		}
+		else {
+			return false;
+		}
+
 	}
 }
 var tables = [];
@@ -464,15 +479,21 @@ $(document).ready(function() {
 			var minutes = parseInt(time[3] + time[4]);
 
 			var stay = parseInt($ui.stationStayInput.val());
-			activeTable.add(new Station(name, hours, minutes, stay));
-			activeTable.renderAll();
+			var check = activeTable.add(new Station(name, hours, minutes, stay));
+			if (check) {
+				activeTable.renderAll();
 
-			saveAllTables();
+				saveAllTables();
 
-			$ui.newStationModal.hide();
-			$ui.stationNameInput.val("");
-			$ui.stationTimeInput.val("");
-			$ui.stationStayInput.val("");
+				$ui.newStationModal.hide();
+				$ui.stationNameInput.val("");
+				$ui.stationTimeInput.val("");
+				$ui.stationStayInput.val("");
+			}
+			else {
+				alert("Неверное время");
+			}
+
 		}
 		else {
 			$ui.newStationWarn.show();
