@@ -9,8 +9,6 @@
 	if (!$charset) {
 		array_push($error_messages, "No charset set");
 	}
-	//mysqli_query("SET NAMES utf-8");
-	
 	if (!$dbc) {
 		array_push($error_messages, "No connection to the base");
 	}
@@ -23,13 +21,11 @@
 
     if (mysqli_num_rows($tables_result) == 0) {
         array_push($error_messages, "No data has come");
-        //exit;
     }
 
 	//$stations_query = "SELECT * FROM stations";
 	//$stations_result = mysqli_query($dbc, $stations_query) or die ('Ошибка при выполнении запроса к базе данных');
 
-	//$tables;
 	while ($row = mysqli_fetch_array($tables_result)) {
 		$tables[$row['id']] = $row['name'];
     }
