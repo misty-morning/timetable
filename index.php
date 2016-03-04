@@ -1,69 +1,60 @@
 <?php
 	include 'db_config.php';
 ?>
+<?php
+	//mysql_query("SET NAMES 'utf-8'");
+	header( 'Content-Type: text/html; charset=utf-8' );
+	$dbc = mysqli_connect($db_host, $db_user, $db_password, $db_name);
+	//mysql_select_db("firstdb",$db);
+	$charset = mysqli_set_charset('utf-8', $dbc);
+	$error_messages = array();
+	if (!$charset) {
+		array_push($error_messages, "No charset set");
+	}
+	//mysqli_query("SET NAMES utf-8");
+	//setlocale(LC_ALL, 'ru_RU.65001', 'rus_RUS.65001', 'Russian_Russia. 65001', 'russian');
+	if (!$dbc) {
+		array_push($error_messages, "No connection to the base");
+	}
 
+	$tables_query = "SELECT * FROM tables";
+	$tables_result = mysqli_query($dbc, $tables_query);
+	if (!$tables_result) {
+		array_push($error_messages, "The query hasn't handled");
+	}
+
+    if (mysqli_num_rows($tables_result) == 0) {
+        array_push($error_messages, "No data has come");
+        //exit;
+    }
+
+	//$stations_query = "SELECT * FROM stations";
+	//$stations_result = mysqli_query($dbc, $stations_query) or die ('Ошибка при выполнении запроса к базе данных');
+
+	//$tables;
+	while ($row = mysqli_fetch_array($tables_result)) {
+		$tables[$row['id']] = $row['name'];
+    }
+    mysqli_close($dbc);
+?>
 <!DOCTYPE html>
 <html lang="ru">
 	<head>
-		<meta charset="utf-8"> 
-		<!-- <meta http-equiv="Content-Type" content="text/html" charset="utf-8"> -->
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<!-- <meta charset="utf-8">  -->
 		<link rel="stylesheet" type="text/css" href="lib/normalize.css">
 		<link rel="stylesheet" type="text/css" href="index.css">
  		<title>Расписание</title>
 	</head>
 <body>
-	<p>
-		<?php
-			$dbc = mysqli_connect($db_host, $db_user, $db_password, $db_name);
-			mysqli_set_charset('utf-8');
-			if (!$dbc) {
-				echo "не коннектит к базе<br>";
+
+	<p class="server-errors">
+		<?php 
+			if ($error_messages) {
+				foreach ($error_messages as $message) {
+					echo 'server error: ' . $message . "<br>";
+				}
 			}
-			else {
-				echo "connected to the base<br>";
-			}
-
-			$tables_query = "SELECT * FROM tables";
-			$tables_result = mysqli_query($dbc, $tables_query);
-			if (!$tables_result) {
-				echo "не обрабатывает запрос<br>";
-			}
-			else {
-				echo "query handled<br>";
-			}
-		    if (mysqli_num_rows($tables_result) == 0) {
-		        echo "No rows found, nothing to print<br>";
-		        //exit;
-		    }
-		    else {
-		    	echo "some data has come<br>";
-		    }
-			//$stations_query = "SELECT * FROM stations";
-			//$stations_result = mysqli_query($dbc, $stations_query) or die ('Ошибка при выполнении запроса к базе данных');
-
-			//echo "<p>" . $tables_result . "</p>";
-			//echo $stations_result;
-
-			
-		/*	
-			$dbc = mysqli_connect($db_host, $db_user, $db_password, $db_name) or die ('Ошибка соединения с MySQL-сервером');
-
-			$test_query = "INSERT INTO `t_table`(`name`, `test`) VALUES ('hey', 'heey')";
-			$result = mysqli_query($dbc, $test_query) or die ('Ошибка при выполнении запроса к базе данных');
-
-			mysqli_close($dbc);*/
-/*			$row = mysql_fetch_assoc($tables_result);
-			echo 'qwe<br>';
-			echo $row;
-			echo "<br>testйцу";*/
-
-			while ($row = mysqli_fetch_assoc($tables_result)) {
-				echo '<br>';
-				echo $row['id'] . " " . $row['name'];
-				echo "<br>";
-		        //echo $row['id'] . ' ' . $row['name'] . '<br>';
-		    }
-		    mysqli_close($dbc);
 		?>
 	</p>
 	<script type="text/javascript">
@@ -76,6 +67,13 @@
 			?>
 		];*/
 	</script>
+	<p> 
+		<?php 
+			foreach ($tables as $key => $value) {
+				echo $key . " " . $value . "<br>";
+			}
+		?>
+	</p>
 	<p class="board__head">Информационное табло</p>
 	<div class="board" id="board"></div>
 	<div class="select-block">
