@@ -1,24 +1,81 @@
 <?php
 	include 'db_config.php';
 ?>
-<?php
-/*	
 
-	$test_query = "INSERT INTO `t_table`(`name`, `test`) VALUES ('hey', 'heey')";
-	$result = mysqli_query($dbc, $test_query) or die ('Ошибка при выполнении запроса к базе данных');
-
-	mysqli_close($dbc);*/
-
-?>
 <!DOCTYPE html>
 <html lang="ru">
 	<head>
-		<meta charset="utf-8">
+		<meta charset="utf-8"> 
+		<!-- <meta http-equiv="Content-Type" content="text/html" charset="utf-8"> -->
 		<link rel="stylesheet" type="text/css" href="lib/normalize.css">
 		<link rel="stylesheet" type="text/css" href="index.css">
  		<title>Расписание</title>
 	</head>
 <body>
+	<p>
+		<?php
+			$dbc = mysqli_connect($db_host, $db_user, $db_password, $db_name);
+			mysqli_set_charset('utf-8');
+			if (!$dbc) {
+				echo "не коннектит к базе<br>";
+			}
+			else {
+				echo "connected to the base<br>";
+			}
+
+			$tables_query = "SELECT * FROM tables";
+			$tables_result = mysqli_query($dbc, $tables_query);
+			if (!$tables_result) {
+				echo "не обрабатывает запрос<br>";
+			}
+			else {
+				echo "query handled<br>";
+			}
+		    if (mysqli_num_rows($tables_result) == 0) {
+		        echo "No rows found, nothing to print<br>";
+		        //exit;
+		    }
+		    else {
+		    	echo "some data has come<br>";
+		    }
+			//$stations_query = "SELECT * FROM stations";
+			//$stations_result = mysqli_query($dbc, $stations_query) or die ('Ошибка при выполнении запроса к базе данных');
+
+			//echo "<p>" . $tables_result . "</p>";
+			//echo $stations_result;
+
+			
+		/*	
+			$dbc = mysqli_connect($db_host, $db_user, $db_password, $db_name) or die ('Ошибка соединения с MySQL-сервером');
+
+			$test_query = "INSERT INTO `t_table`(`name`, `test`) VALUES ('hey', 'heey')";
+			$result = mysqli_query($dbc, $test_query) or die ('Ошибка при выполнении запроса к базе данных');
+
+			mysqli_close($dbc);*/
+/*			$row = mysql_fetch_assoc($tables_result);
+			echo 'qwe<br>';
+			echo $row;
+			echo "<br>testйцу";*/
+
+			while ($row = mysqli_fetch_assoc($tables_result)) {
+				echo '<br>';
+				echo $row['id'] . " " . $row['name'];
+				echo "<br>";
+		        //echo $row['id'] . ' ' . $row['name'] . '<br>';
+		    }
+		    mysqli_close($dbc);
+		?>
+	</p>
+	<script type="text/javascript">
+/*		window.preTables = [
+			<?php
+				while ($row = mysql_fetch_assoc($tables_result)) {
+				        echo $row["id"];
+				        echo $row["name"];
+				    }
+			?>
+		];*/
+	</script>
 	<p class="board__head">Информационное табло</p>
 	<div class="board" id="board"></div>
 	<div class="select-block">
