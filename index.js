@@ -253,6 +253,10 @@ var Table = function(name, firstStation, lastStation) {
 				check = false;
 				break;
 			}
+			else if (station.departureTime.getTime() > this.stations[i].arrivalTime.getTime() && station.departureTime.getTime() < this.stations[i].departureTime.getTime()) {
+				check = false;
+				break;	
+			}
 			
 		};
 		if (check) {
