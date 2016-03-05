@@ -261,8 +261,8 @@ var tableIndex = 0;
 for (table in window.preTables) {
 	tables.push(new Table(table));
 	for (var i = 0; i < window.preTables[table].length; i++) {
-		console.log("qwe")
-		tables[tableIndex].add(new Station(window.preTables[table][i].name, window.preTables[table][i].hours, window.preTables[table][i].minutes, window.preTables[table][i].staying));
+		//console.log("qwe")
+		tables[tableIndex].add(new Station(window.preTables[table][i].name, parseInt(window.preTables[table][i].hours), parseInt(window.preTables[table][i].minutes), parseInt(window.preTables[table][i].staying)));
 		//window.preTables[table][i]
 	};
 	tableIndex++;

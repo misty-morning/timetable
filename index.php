@@ -37,7 +37,7 @@
 		public $parent;
 		public $hours;
 		public $minutes;
-		public $stating;
+		public $staying;
 	}
 	$stations = array();
 	while ($row = mysqli_fetch_array($stations_result)) {
@@ -47,7 +47,7 @@
 		$st->parent = $row['parent'];
 		$st->hours = $row['hours'];
 		$st->minutes = $row['minutes'];
-		$st->stating = $row['stating'];
+		$st->staying = $row['staying'];
 		array_push($stations, $st);
     }
     $pre_tables = array();
