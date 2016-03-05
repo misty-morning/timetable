@@ -31,17 +31,17 @@
 	if (!$stations_result) {
 		array_push($error_messages, "stations query hasn't handled");
 	}
-	class station {
+/*	class station {
 		public $id;
 		public $name;
 		public $parent;
 		public $hours;
 		public $minutes;
 		public $stating;
-	}
+	}*/
 	$stations = array();
 	while ($row = mysqli_fetch_array($stations_result)) {
-		$st = new station();
+		//$st = new station();
 		$st->id = $row['id'];
 		$st->name = $row['name'];
 		$st->parent = $row['parent'];
