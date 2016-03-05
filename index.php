@@ -20,10 +20,10 @@
 	}
 
     if (mysqli_num_rows($tables_result) == 0) {
-        array_push($error_messages, "No data has come");
+        array_push($error_messages, "No tables data has come");
     }
 	while ($row = mysqli_fetch_array($tables_result)) {
-		$pre_tables[$row['id']] = $row['name'];
+		$tables[$row['id']] = $row['name'];
     }
 
 	$stations_query = "SELECT * FROM stations";
@@ -31,18 +31,43 @@
 	if (!$stations_result) {
 		array_push($error_messages, "stations query hasn't handled");
 	}
-
+	class station {
+		public $id;
+		public $name;
+		public $parent;
+		public $hours;
+		public $minutes;
+		public $stating;
+	}
+	$stations = array();
 	while ($row = mysqli_fetch_array($stations_result)) {
-		$stations[$row['id']] = $row['name'];
+		$st = new station();
+		$st->id = $row['id'];
+		$st->name = $row['name'];
+		$st->parent = $row['parent'];
+		$st->hours = $row['hours'];
+		$st->minutes = $row['minutes'];
+		$st->stating = $row['stating'];
+		array_push($stations, $st);
+    }
+    $pre_tables = array();
+    foreach($tables as $id => $name) {
+    	$pre_tables[$name] = array();
+    	for ($i=0; $i < count($stations); $i++) { 
+    		if($stations[$i]->parent == $id) {
+    			array_push($pre_tables[$name], $stations[$i]);
+    		}
+    	}
     }
 
     mysqli_close($dbc);
+
+	$pre_tables = json_encode($pre_tables);
 ?>
 <!DOCTYPE html>
 <html lang="ru">
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<!-- <meta charset="utf-8">  -->
 		<link rel="stylesheet" type="text/css" href="lib/normalize.css">
 		<link rel="stylesheet" type="text/css" href="index.css">
  		<title>Расписание</title>
@@ -50,6 +75,7 @@
 <body>
 	<p class="server-errors">
 		<?php 
+			//echo 'test: ' . $test . "<br>";
 			if ($error_messages) {
 				foreach ($error_messages as $message) {
 					echo 'server error: ' . $message . "<br>";
@@ -58,25 +84,9 @@
 		?>
 	</p>
 	<script type="text/javascript">
-/*		window.preTables = [
-			<?php
-				while ($row = mysql_fetch_assoc($tables_result)) {
-				        echo $row["id"];
-				        echo $row["name"];
-				    }
-			?>
-		];*/
+		window.preTables = <?php echo $pre_tables ?>;
+		console.log(window.preTables);
 	</script>
-	<p> 
-		<?php 
-			foreach ($pre_tables as $key => $value) {
-				echo $key . " " . $value . "<br>";
-			}
-			foreach ($stations as $key => $value) {
-				echo $key . " " . $value . "<br>";
-			}
-		?>
-	</p>
 	<p class="board__head">Информационное табло</p>
 	<div class="board" id="board"></div>
 	<div class="select-block">
