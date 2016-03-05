@@ -23,7 +23,7 @@
         array_push($error_messages, "No data has come");
     }
 	while ($row = mysqli_fetch_array($tables_result)) {
-		$tables[$row['id']] = $row['name'];
+		$pre_tables[$row['id']] = $row['name'];
     }
 
 	$stations_query = "SELECT * FROM stations";
@@ -69,7 +69,7 @@
 	</script>
 	<p> 
 		<?php 
-			foreach ($tables as $key => $value) {
+			foreach ($pre_tables as $key => $value) {
 				echo $key . " " . $value . "<br>";
 			}
 			foreach ($stations as $key => $value) {
