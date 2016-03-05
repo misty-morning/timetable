@@ -73,6 +73,7 @@
  		<title>Расписание</title>
 	</head>
 <body>
+	<script type="text/javascript" src="lib/jquery-2.2.1.min.js"></script>
 	<p class="server-errors">
 		<?php 
 			//echo 'test: ' . $test . "<br>";
@@ -84,7 +85,8 @@
 		?>
 	</p>
 	<script type="text/javascript">
-		window.preTables = <?php echo $pre_tables ?>;
+		//window.preTables = $.parseJSON( <?php echo "'" . $pre_tables . "'" ?> );
+		window.preTables = <?php echo $pre_tables; ?>;
 		console.log(window.preTables);
 	</script>
 	<p class="board__head">Информационное табло</p>
@@ -189,7 +191,7 @@
 		</div>
 	</div>
 
-	<script type="text/javascript" src="lib/jquery-2.2.1.min.js"></script>
+	
 	<script type="text/javascript" src="index.js"></script>
 </body>
 </html>
