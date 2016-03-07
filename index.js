@@ -113,7 +113,7 @@ var Table = function(name, firstStation, lastStation) {
 			var arrival = arrivalHoursEL + " : " + arrivalMinutesEL;
 			if (i !== 0 && i !== this.stations.length - 1) {
 				var stayTimeEl = "<input class='stay-time time-number-input management-el' data-id='"+i+"' min='0' type='number' value='"+ this.stations[i].stayingTime +"'> мин.";
-				var departureTimeEl = "<span class='departure-time' data-id='"+i+"'>"+ this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes() +"</span>";
+				var departureTimeEl = "<span class='departure-time' data-id='"+i+"'>"+ timePrefix(this.stations[i].departureTime.getHours()) + ":" + timePrefix(this.stations[i].departureTime.getMinutes()) +"</span>";
 			}
 			else {
 				var stayTimeEl = "";
@@ -226,7 +226,7 @@ var Table = function(name, firstStation, lastStation) {
 				$(".departure-time[data-id='"+i+"']").html("");
 			}
 			else {
-				$(".departure-time[data-id='"+i+"']").html(this.stations[i].departureTime.getHours() + ":" + this.stations[i].departureTime.getMinutes());
+				$(".departure-time[data-id='"+i+"']").html(timePrefix(this.stations[i].departureTime.getHours()) + ":" + timePrefix(this.stations[i].departureTime.getMinutes()));
 			}
 		}
 		
