@@ -261,9 +261,7 @@ var tableIndex = 0;
 for (table in window.preTables) {
 	tables.push(new Table(table));
 	for (var i = 0; i < window.preTables[table].length; i++) {
-		//console.log("qwe")
 		tables[tableIndex].add(new Station(window.preTables[table][i].name, parseInt(window.preTables[table][i].hours), parseInt(window.preTables[table][i].minutes), parseInt(window.preTables[table][i].staying)));
-		//window.preTables[table][i]
 	};
 	tableIndex++;
 }
@@ -271,21 +269,32 @@ console.log(tables);
 var activeTable = tables[0];
 activeTable.id = 0;
 
-/*var mskSpb = new Table("Москва - Спб", new Station("Москва", 8, 0), new Station("Санкт-Петербург", 23, 30));
-mskSpb.add(new Station("Тверь", 10, 15, 20));
-mskSpb.add(new Station("Бологое", 13, 37, 7));
-mskSpb.add(new Station("Окуловка", 17, 33, 4));
-mskSpb.add(new Station("Малая Вишера", 20, 40, 5));
-
-var mskPod = new Table("Подольск - Москва", new Station("Подольск", 7, 10), new Station("Москва", 9, 0));
-mskPod.add(new Station("Царицыно", 8, 15, 3));
-mskPod.add(new Station("Красный строитель", 8, 37, 5));
-
-tables = [mskSpb, mskPod];
-var activeTable = tables[0];
-activeTable.id = 0;*/
-
-
+function stationAdd(station, tableId) {
+	var data = {
+		action: "add",
+		name: station.name,
+		hours: station.arrivalTime.getHours(),
+		minutes: station.arrivalTime.getMinutes(),
+		staying: station.stayingTime,
+	};
+	if (tableId) {
+		data.parent = tableId;
+	}
+	console.log("ajax data ", data);
+    $.ajax({
+        url: "/station_change.php/",
+        type: 'post',
+        dataType: "json",
+        data: data,
+        success: function(data){
+        	console.log("the station successfully added");
+        },
+        error: function(err) {
+            console.log("kind of error ", err);
+        }
+    });
+}
+var testSt = new Station("qsdvrbre", 13, 15, 30);
 
 
 
@@ -310,6 +319,22 @@ function board(activeTable) {
 }
 
 $(document).ready(function() {
+	stationAdd(testSt);
+
+/*	var testData = {
+		name: "русскаибукавы",
+	};
+	$.ajax({
+		url: "/test_ajax.php/",
+		type: 'post',
+		dataType: "json",
+		data: testData,
+	});
+*/
+
+
+
+
 	activeTable.renderAll();
 	fillSelect();
 	var boardIntervalID;

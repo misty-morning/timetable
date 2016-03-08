@@ -51,6 +51,11 @@
 		array_push($stations, $st);
     }
     $pre_tables = array();
+    class table {
+		public $id;
+		public $name;
+		public $stations = [];
+    }
     foreach($tables as $id => $name) {
     	$pre_tables[$name] = array();
     	for ($i=0; $i < count($stations); $i++) { 
