@@ -1,10 +1,8 @@
 <?php
-	include 'db_config.php';
-?>
-<?php
-	$dbc = mysqli_connect($db_host, $db_user, $db_password, $db_name);
-	$charset = mysqli_set_charset($dbc, "utf8");
+	include 'db_connect.php';
+
 	setlocale(LC_ALL, 'ru_RU.65001', 'rus_RUS.65001', 'Russian_Russia. 65001', 'russian');
+
 	$error_messages = array();
 	if (!$charset) {
 		array_push($error_messages, "No charset set");
