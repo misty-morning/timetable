@@ -325,7 +325,7 @@ function board(activeTable) {
 }
 
 $(document).ready(function() {
-	stationAdd(testSt);
+	//stationAdd(testSt);
 
 /*	var testData = {
 		name: "русскаибукавы",
@@ -464,7 +464,7 @@ $(document).ready(function() {
 			var stay = parseInt($ui.stationStayInput.val());
 			activeTable.add(new Station(name, hours, minutes, stay));
 			activeTable.renderAll();
-			stationAdd();
+			stationAdd(new Station(name, hours, minutes, stay), activeTable.dbIndex);
 
 
 			$ui.newStationModal.hide();

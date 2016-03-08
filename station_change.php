@@ -11,8 +11,9 @@
 		$hours = $_POST['hours'];
 		$minutes = $_POST['minutes'];
 		$staying = $_POST['staying'];
+		$parent = $_POST['parent'];
 
-		$query = "INSERT INTO stations (name, parent, hours, minutes, staying) VALUES ('".$name."', '2', '".$hours."', '".$minutes."', '".$staying."')";
+		$query = "INSERT INTO stations (name, parent, hours, minutes, staying) VALUES ('".$name."', '".$parent."', '".$hours."', '".$minutes."', '".$staying."')";
 		//$query = "INSERT INTO test (name) VALUES ('".$name."')";
 	}
 	mysqli_query($dbc, $query);
