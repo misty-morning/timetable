@@ -257,13 +257,19 @@ var Table = function(name, firstStation, lastStation) {
 
 
 var tables = [];
-var tableIndex = 0;
-for (table in window.preTables) {
-	tables.push(new Table(table));
-	for (var i = 0; i < window.preTables[table].length; i++) {
-		tables[tableIndex].add(new Station(window.preTables[table][i].name, parseInt(window.preTables[table][i].hours), parseInt(window.preTables[table][i].minutes), parseInt(window.preTables[table][i].staying)));
+//var tableIndex = 0;
+for (var h = 0; h < window.preTables.length; h++) {
+	tables.push(new Table(window.preTables[h].name));
+	tables[h].dbIndex = window.preTables[h].id;
+	for (var i = 0; i < window.preTables[h].stations.length; i++) {
+		tables[h].add(new Station(
+			window.preTables[h].stations[i].name, 
+			parseInt(window.preTables[h].stations[i].hours), 
+			parseInt(window.preTables[h].stations[i].minutes), 
+			parseInt(window.preTables[h].stations[i].staying))
+		);
 	};
-	tableIndex++;
+	//tableIndex++;
 }
 console.log(tables);
 var activeTable = tables[0];
@@ -458,6 +464,8 @@ $(document).ready(function() {
 			var stay = parseInt($ui.stationStayInput.val());
 			activeTable.add(new Station(name, hours, minutes, stay));
 			activeTable.renderAll();
+			stationAdd();
+
 
 			$ui.newStationModal.hide();
 			$ui.stationNameInput.val("");

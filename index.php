@@ -54,15 +54,22 @@
     class table {
 		public $id;
 		public $name;
-		public $stations = [];
+		public $stations = array();
     }
+    $count = 0;
     foreach($tables as $id => $name) {
-    	$pre_tables[$name] = array();
+    	$pre_tables[$count] = new table();
+    	$pre_tables[$count]->id = $id;
+    	$pre_tables[$count]->name = $name;
+    	//$pre_tables[$name] = new table();
+    	//$pre_tables[$name]->id = $id;
+    	//$pre_tables[$name]->name = $name;
     	for ($i=0; $i < count($stations); $i++) { 
     		if($stations[$i]->parent == $id) {
-    			array_push($pre_tables[$name], $stations[$i]);
+    			array_push($pre_tables[$count]->stations, $stations[$i]);
     		}
     	}
+    	$count++;
     }
 
     mysqli_close($dbc);
