@@ -276,6 +276,29 @@ console.log(tables);
 var activeTable = tables[0];
 activeTable.id = 0;
 
+function tableAdd(table) {
+	var deferred = $.Deferred();
+	var data = {
+		action: 'add',
+		name: table.name,
+	};
+    $.ajax({
+        url: "/table_change.php/",
+        type: 'post',
+        dataType: "json",
+        data: data,
+        success: function(data){
+        	console.log("the table successfully deleted ", data);
+        	deferred.resolve(data.id);
+        },
+        error: function(err) {
+            console.log("kind of error ", err);
+        	deferred.resolve(false);
+        }
+    });
+    return deferred.promise();
+}
+
 function stationAdd(station, tableId) {
 	var deferred = $.Deferred();
 	var data = {
@@ -419,13 +442,23 @@ $(document).ready(function() {
 			$ui.newTableWarn.empty();
 
 			var name = $ui.tableNameInput.val();
-			tables.push(new Table(name));
-			activeTable = tables[tables.length - 1];
-			activeTable.id = tables.length - 1;
-			activeTable.renderAll();
-			fillSelect();
-			clearBoard();
-			$ui.selectTable.children("option[value='"+(tables.length - 1)+"']").prop('selected', true);
+			var table = new Table(name)
+			tableAdd(table).done(function(dbId) {
+				if(dbId) {
+					table.dbIndex = dbId;
+					tables.push(table);
+					activeTable = tables[tables.length - 1];
+					activeTable.id = tables.length - 1;
+					activeTable.renderAll();
+					fillSelect();
+					clearBoard();
+					$ui.selectTable.children("option[value='"+(tables.length - 1)+"']").prop('selected', true);
+				}
+				else {
+					alert("Невозможно создать таблицу")
+				}
+			});
+
 
 			$ui.newTableModal.hide();
 			$ui.tableNameInput.val("");

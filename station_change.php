@@ -1,6 +1,5 @@
 <?php
 	include 'db_connect.php';
-	//header("content-type:application/json");
 	$action = $_POST['action'];
 	
 	if ($action == 'add') {
@@ -23,7 +22,7 @@
 
 		$query = "DELETE FROM stations WHERE id=".$id."";
 		$result = mysqli_query($dbc, $query);
-		
+
 		$answer = array('result' => $result);
 	}
 	//$test = array('test', 'huest');
