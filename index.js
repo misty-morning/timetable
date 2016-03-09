@@ -17,7 +17,7 @@ var ui = {
 
 	newStation: "#new-station",
 	newStationModal: "#new-station-modal",
-	deleteStation: "#delete-station",
+	deleteStationFromBase: "#delete-station",
 	stationNameInput: "#station-name-input",
 	stationTimeInput: "#station-time-input",
 	stationStayInput: "#station-stay-input",
@@ -48,7 +48,7 @@ function millisecondToTime(millisecond) {
 function fillSelect() {
 	$ui.selectTable.empty();
 	for (var i = 0; i < tables.length; i++) {
-		$ui.selectTable.append("<option value='"+i+"'>"+tables[i].name+"</option");
+		$ui.selectTable.append("<option value='"+i+"' data-dbid='"+tables[i].dbIndex+"'>"+tables[i].name+"</option");
 	};	
 }
 function timeForInput(hours, minutes) {
@@ -276,7 +276,7 @@ console.log(tables);
 var activeTable = tables[0];
 activeTable.id = 0;
 
-function tableAdd(table) {
+function addTableToBase(table) {
 	var deferred = $.Deferred();
 	var data = {
 		action: 'add',
@@ -298,8 +298,29 @@ function tableAdd(table) {
     });
     return deferred.promise();
 }
-
-function stationAdd(station, tableId) {
+function deleteTableFromBase(id) {
+	var deferred = $.Deferred();
+	var data = {
+		action: "delete",
+		id: id,
+	};
+    $.ajax({
+        url: "/table_change.php/",
+        type: 'post',
+        dataType: "json",
+        data: data,
+        success: function(data){
+        	console.log("the table successfully deleted ", data);
+        	deferred.resolve(data.result);
+        },
+        error: function(err) {
+            console.log("kind of error ", err);
+        	deferred.resolve(false);
+        }
+    });
+    return deferred.promise();
+}
+function addStationToBase(station, tableId) {
 	var deferred = $.Deferred();
 	var data = {
 		action: "add",
@@ -331,7 +352,7 @@ function stationAdd(station, tableId) {
     });
     return deferred.promise();
 }
-function deleteStation(id) {
+function deleteStationFromBase(id) {
 	var deferred = $.Deferred();
 	var data = {
 		action: "delete",
@@ -376,7 +397,7 @@ function board(activeTable) {
 }
 
 $(document).ready(function() {
-	//stationAdd(testSt);
+	//addStationToBase(testSt);
 
 /*	var testData = {
 		name: "русскаибукавы",
@@ -388,7 +409,7 @@ $(document).ready(function() {
 		data: testData,
 	});
 */
-	//deleteStation(26);
+	//deleteStationFromBase(26);
 	activeTable.renderAll();
 	fillSelect();
 	var boardIntervalID;
@@ -409,7 +430,7 @@ $(document).ready(function() {
 		$ui.newTable.prop("disabled", true);
 		$ui.deleteTable.prop("disabled", true);
 		$ui.newStation.prop("disabled", true);
-		$ui.deleteStation.prop("disabled", true);
+		$ui.deleteStationFromBase.prop("disabled", true);
 		$ui.selectTable.prop("disabled", true);
 		$ui.newStationModal.hide();
 		$ui.newTableModal.hide();
@@ -420,7 +441,7 @@ $(document).ready(function() {
 		$ui.newTable.prop("disabled", false);
 		$ui.deleteTable.prop("disabled", false);
 		$ui.newStation.prop("disabled", false);
-		$ui.deleteStation.prop("disabled", false);
+		$ui.deleteStationFromBase.prop("disabled", false);
 		$ui.selectTable.prop("disabled", false);
 	});
 
@@ -443,7 +464,7 @@ $(document).ready(function() {
 
 			var name = $ui.tableNameInput.val();
 			var table = new Table(name)
-			tableAdd(table).done(function(dbId) {
+			addTableToBase(table).done(function(dbId) {
 				if(dbId) {
 					table.dbIndex = dbId;
 					tables.push(table);
@@ -475,7 +496,7 @@ $(document).ready(function() {
 	$ui.deleteTable.click(function() {
 		$ui.delTableSelect.empty();
 		for (var i = 0; i < tables.length; i++) {
-			$ui.delTableSelect.append("<option value='"+i+"'>"+ tables[i].name +"</option>");
+			$ui.delTableSelect.append("<option value='"+i+"' data-dbid='"+tables[i].dbIndex+"'>"+ tables[i].name +"</option>");
 		};
 
 		$ui.delTableModal.show();
@@ -485,14 +506,23 @@ $(document).ready(function() {
 	});
 	$ui.delTableOk.click(function() {
 		var id = $ui.delTableSelect.children("option:selected").attr("value");
+		var dbId = $ui.delTableSelect.children("option:selected").data("dbid");
+		console.log(dbId)
+		deleteTableFromBase(dbId).done(function(result) {
+			if (result) {
+				tables.splice(id, 1);
+				if (activeTable.id === id) {
+					activeTable = tables[0];
+					activeTable.id = 0;
+					activeTable.renderAll();
+				}
+				fillSelect();
+			}
+			else {
+				alert("Невозможно удалить расписание")
+			}
 
-		tables.splice(id, 1);
-		if (activeTable.id === id) {
-			activeTable = tables[0];
-			activeTable.id = 0;
-			activeTable.renderAll();
-		}
-		fillSelect();
+		});
 
 		$ui.delTableModal.hide();
 	});
@@ -522,7 +552,7 @@ $(document).ready(function() {
 			var stay = parseInt($ui.stationStayInput.val());
 
 			var newStation = new Station(name, hours, minutes, stay);
-			stationAdd(newStation, activeTable.dbIndex).done(function(id) {
+			addStationToBase(newStation, activeTable.dbIndex).done(function(id) {
 				if (id) {
 					//console.log("def id ", id);
 					newStation.dbIndex = id;
@@ -549,7 +579,7 @@ $(document).ready(function() {
 	$ui.newStationNo.click(function() {
 		$ui.newStationModal.hide();
 	});
-	$ui.deleteStation.click(function() {
+	$ui.deleteStationFromBase.click(function() {
 		$ui.delStationSelect.empty();
 		for (var i = 0; i < activeTable.stations.length; i++) {
 			$ui.delStationSelect.append("<option value='"+i+"' data-dbid='"+activeTable.stations[i].dbIndex+"'>"+ activeTable.stations[i].name +"</option>");
@@ -562,7 +592,7 @@ $(document).ready(function() {
 	$ui.delStationOk.click(function() {
 		var id = $ui.delStationSelect.children("option:selected").attr("value");
 		var dbId = $ui.delStationSelect.children("option:selected").data("dbid");
-		deleteStation(dbId).done(function(result) {
+		deleteStationFromBase(dbId).done(function(result) {
 			if (result) {
 				activeTable.stations.splice(id, 1);
 				activeTable.sort();

@@ -12,6 +12,14 @@
 
 		$answer = array('id' => $id);
 	}
+	else if ($action == 'delete') {
+		$id = $_POST['id'];
+
+		$query = "DELETE FROM tables WHERE id=".$id."";
+		$result = mysqli_query($dbc, $query);
+
+		$answer = array('result' => $result);
+	}
 	echo json_encode($answer);
 	mysqli_close($dbc);
 ?>
