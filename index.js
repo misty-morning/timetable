@@ -257,19 +257,20 @@ var Table = function(name, firstStation, lastStation) {
 
 
 var tables = [];
-//var tableIndex = 0;
+
 for (var h = 0; h < window.preTables.length; h++) {
 	tables.push(new Table(window.preTables[h].name));
 	tables[h].dbIndex = window.preTables[h].id;
 	for (var i = 0; i < window.preTables[h].stations.length; i++) {
-		tables[h].add(new Station(
+		var station = new Station(
 			window.preTables[h].stations[i].name, 
 			parseInt(window.preTables[h].stations[i].hours), 
 			parseInt(window.preTables[h].stations[i].minutes), 
-			parseInt(window.preTables[h].stations[i].staying))
+			parseInt(window.preTables[h].stations[i].staying)
 		);
+		station.dbIndex = window.preTables[h].stations[i].id;
+		tables[h].add(station);
 	};
-	//tableIndex++;
 }
 console.log(tables);
 var activeTable = tables[0];
@@ -300,9 +301,7 @@ function stationAdd(station, tableId) {
         }
     });
 }
-var testSt = new Station("qsdvrbre", 13, 15, 30);
-
-
+//var testSt = new Station("qsdvrbre", 13, 15, 30);
 
 function board(activeTable) {
 	$ui.board.html("Расписание активно");
