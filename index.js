@@ -308,6 +308,28 @@ function stationAdd(station, tableId) {
     });
     return deferred.promise();
 }
+function deleteStation(id) {
+	var deferred = $.Deferred();
+	var data = {
+		action: "delete",
+		id: id,
+	};
+    $.ajax({
+        url: "/station_change.php/",
+        type: 'post',
+        dataType: "json",
+        data: data,
+        success: function(data){
+        	console.log("the station successfully deleted ", data);
+        	deferred.resolve(true);
+        },
+        error: function(err) {
+            console.log("kind of error ", err);
+        	deferred.resolve(false);
+        }
+    });
+    return deferred.promise();
+}
 //var testSt = new Station("qsdvrbre", 13, 15, 30);
 
 function board(activeTable) {
@@ -343,6 +365,7 @@ $(document).ready(function() {
 		data: testData,
 	});
 */
+	//deleteStation(26);
 	activeTable.renderAll();
 	fillSelect();
 	var boardIntervalID;
@@ -496,7 +519,7 @@ $(document).ready(function() {
 	$ui.deleteStation.click(function() {
 		$ui.delStationSelect.empty();
 		for (var i = 0; i < activeTable.stations.length; i++) {
-			$ui.delStationSelect.append("<option value='"+i+"'>"+ activeTable.stations[i].name +"</option>");
+			$ui.delStationSelect.append("<option value='"+i+"' data-dbid='"+activeTable.stations[i].dbIndex+"'>"+ activeTable.stations[i].name +"</option>");
 		};
 		$ui.delStationModal.show();
 	});
@@ -505,9 +528,15 @@ $(document).ready(function() {
 	});
 	$ui.delStationOk.click(function() {
 		var id = $ui.delStationSelect.children("option:selected").attr("value");
-		activeTable.stations.splice(id, 1);
-		activeTable.sort();
-		activeTable.renderAll();
+		var dbId = $ui.delStationSelect.children("option:selected").data("dbid");
+		deleteStation(dbId).done(function(result) {
+			if (result) {
+				activeTable.stations.splice(id, 1);
+				activeTable.sort();
+				activeTable.renderAll();
+			}
+		});
+
 		$ui.delStationModal.hide();
 	});
 });

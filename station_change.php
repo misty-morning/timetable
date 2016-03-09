@@ -18,7 +18,14 @@
 
 		$answer = array('id' => $id);
 	}
-	
+	else if ($action == 'delete') {
+		$id = $_POST['id'];
+
+		$query = "DELETE FROM stations WHERE id=".$id."";
+		$result = mysqli_query($dbc, $query);
+		
+		$answer = array('result' => $result);
+	}
 	//$test = array('test', 'huest');
 	echo json_encode($answer);
 	//return json_encode($test);
