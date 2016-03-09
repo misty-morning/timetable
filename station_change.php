@@ -1,6 +1,6 @@
 <?php
 	include 'db_connect.php';
-
+	//header("content-type:application/json");
 	$action = $_POST['action'];
 	
 	if ($action == 'add') {
@@ -12,7 +12,15 @@
 
 		$query = "INSERT INTO stations (name, parent, hours, minutes, staying) VALUES ('".$name."', '".$parent."', '".$hours."', '".$minutes."', '".$staying."')";
 		//$query = "INSERT INTO test (name) VALUES ('".$name."')";
+
+		mysqli_query($dbc, $query);
+		$id = mysqli_insert_id($dbc);
+
+		$answer = array('id' => $id);
 	}
-	mysqli_query($dbc, $query);
+	
+	//$test = array('test', 'huest');
+	echo json_encode($answer);
+	//return json_encode($test);
 	mysqli_close($dbc);
 ?>

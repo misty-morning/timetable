@@ -277,6 +277,7 @@ var activeTable = tables[0];
 activeTable.id = 0;
 
 function stationAdd(station, tableId) {
+	var deferred = $.Deferred();
 	var data = {
 		action: "add",
 		name: station.name,
@@ -287,19 +288,25 @@ function stationAdd(station, tableId) {
 	if (tableId) {
 		data.parent = tableId;
 	}
-	console.log("ajax data ", data);
+	var answer;
+	//console.log("ajax data ", data);
     $.ajax({
         url: "/station_change.php/",
         type: 'post',
         dataType: "json",
         data: data,
         success: function(data){
-        	console.log("the station successfully added");
+        	console.log("the station successfully added ", data);
+        	answer = data.id;
+        	deferred.resolve(answer);
         },
         error: function(err) {
             console.log("kind of error ", err);
+            answer = false;
+            deferred.resolve(answer);
         }
     });
+    return deferred.promise();
 }
 //var testSt = new Station("qsdvrbre", 13, 15, 30);
 
@@ -336,10 +343,6 @@ $(document).ready(function() {
 		data: testData,
 	});
 */
-
-
-
-
 	activeTable.renderAll();
 	fillSelect();
 	var boardIntervalID;
@@ -461,10 +464,20 @@ $(document).ready(function() {
 			var minutes = parseInt(time[3] + time[4]);
 
 			var stay = parseInt($ui.stationStayInput.val());
-			activeTable.add(new Station(name, hours, minutes, stay));
-			activeTable.renderAll();
-			stationAdd(new Station(name, hours, minutes, stay), activeTable.dbIndex);
 
+			var newStation = new Station(name, hours, minutes, stay);
+			stationAdd(newStation, activeTable.dbIndex).done(function(id) {
+				if (id) {
+					//console.log("def id ", id);
+					newStation.dbIndex = id;
+					activeTable.add(newStation);
+					activeTable.renderAll();
+				}
+				else {
+					alert("Невозможно добавить станцию");
+				}
+
+			});
 
 			$ui.newStationModal.hide();
 			$ui.stationNameInput.val("");
