@@ -215,8 +215,10 @@ var Table = function(name, firstStation, lastStation) {
 			return deferred.promise();
 		}
 		$(".arrival-hour").change(function() {
+			
 			var $hourEl = $(this);
 			var id = $(this).data("id");
+			var oldHours = tableObject.stations[id].arrivalTime.getHours();
 			var dbId = $(this).data("dbid");
 			var hours = parseInt($(this).val());
 			var minutes = parseInt($(".arrival-minute[data-id='"+ id +"']").val());
@@ -224,14 +226,19 @@ var Table = function(name, firstStation, lastStation) {
 				if(result.changed) {
 					$(this).val(timePrefix(tableObject.stations[id].arrivalTime.getHours()));
 					$(".arrival-minute[data-id='"+ id +"']").val(timePrefix(tableObject.stations[id].arrivalTime.getMinutes()));
+					$hourEl.val(timePrefix($hourEl.val()));
 				}
-				$hourEl.val(timePrefix($hourEl.val()));
+				else {
+					$hourEl.val(timePrefix(oldHours));
+				}
+				
 			});
-
+			//$hourEl.val(timePrefix($hourEl.val()));
 		});
 		$(".arrival-minute").change(function() {
 			var $minuteEl = $(this);
 			var id = $(this).data("id");
+			var oldMinutes = tableObject.stations[id].arrivalTime.getMinutes();
 			var dbId = $(this).data("dbid");
 			var hours = parseInt($(".arrival-hour[data-id='"+ id +"']").val());
 			var minutes = parseInt($(this).val());
@@ -239,8 +246,11 @@ var Table = function(name, firstStation, lastStation) {
 				if(result.changed) {
 					$(this).val(timePrefix(tableObject.stations[id].arrivalTime.getMinutes()));
 					$(".arrival-hour[data-id='"+ id +"']").val(timePrefix(tableObject.stations[id].arrivalTime.getHours()));
+					$minuteEl.val(timePrefix($minuteEl.val()));
 				}
-				$minuteEl.val(timePrefix($minuteEl.val()));
+				else {
+					$minuteEl.val(timePrefix(oldMinutes));
+				}
 			});	
 /*			var timeChanged = setNewArrivalTime(id, hours, minutes);
 			if (!timeChanged) {
