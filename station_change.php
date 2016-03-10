@@ -25,8 +25,27 @@
 
 		$answer = array('result' => $result);
 	}
-	//$test = array('test', 'huest');
+	else if ($action == 'change_time') {
+		$id = $_POST['id'];
+		$hours = $_POST['hours'];
+		$minutes = $_POST['minutes'];
+
+		$query = "UPDATE stations SET hours='".$hours."', minutes='".$minutes."' WHERE id='".$id."'";
+		$result = mysqli_query($dbc, $query);
+
+		$answer = array('result' => $result);
+
+	}
+	else if ($action == 'change_staying') {
+		$id = $_POST['id'];
+		$staying = $_POST['staying'];
+
+		$query = "UPDATE stations SET staying='".$staying."' WHERE id='".$id."'";
+		$result = mysqli_query($dbc, $query);
+
+		$answer = array('result' => $result);
+
+	}
 	echo json_encode($answer);
-	//return json_encode($test);
 	mysqli_close($dbc);
 ?>

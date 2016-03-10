@@ -108,11 +108,11 @@ var Table = function(name, firstStation, lastStation) {
 	this.renderAll = function() {
 		$(".tt-row").remove();
 		for (var i = 0; i < this.stations.length; i++) {
-			var arrivalHoursEL = "<input type='number' min='0' max='23' data-id='"+i+"' class='time-number-input arrival-hour management-el' value='"+ timePrefix(this.stations[i].arrivalTime.getHours())+"'>";
-			var arrivalMinutesEL = "<input type='number' min='0' max='59' data-id='"+i+"' class='time-number-input arrival-minute management-el' value='"+timePrefix(this.stations[i].arrivalTime.getMinutes())+"'>";
+			var arrivalHoursEL = "<input type='number' min='0' max='23' data-id='"+i+"' data-dbid='"+ this.stations[i].dbIndex +"' class='time-number-input arrival-hour management-el' value='"+ timePrefix(this.stations[i].arrivalTime.getHours())+"'>";
+			var arrivalMinutesEL = "<input type='number' min='0' max='59' data-id='"+i+"' data-dbid='"+ this.stations[i].dbIndex +"' class='time-number-input arrival-minute management-el' value='"+timePrefix(this.stations[i].arrivalTime.getMinutes())+"'>";
 			var arrival = arrivalHoursEL + " : " + arrivalMinutesEL;
 			if (i !== 0 && i !== this.stations.length - 1) {
-				var stayTimeEl = "<input class='stay-time time-number-input management-el' data-id='"+i+"' min='0' type='number' value='"+ this.stations[i].stayingTime +"'> мин.";
+				var stayTimeEl = "<input class='stay-time time-number-input management-el' data-id='"+i+"' data-dbid='"+ this.stations[i].dbIndex +"' min='0' type='number' value='"+ this.stations[i].stayingTime +"'> мин.";
 				var departureTimeEl = "<span class='departure-time' data-id='"+i+"'>"+ timePrefix(this.stations[i].departureTime.getHours()) + ":" + timePrefix(this.stations[i].departureTime.getMinutes()) +"</span>";
 			}
 			else {
@@ -139,6 +139,7 @@ var Table = function(name, firstStation, lastStation) {
 		var tableObject = this;
 		$(".stay-time").change(function() {
 			var id = $(this).data("id");
+			var dbId = $(this).data("dbid");
 			var minutes = parseInt($(this).val());
 			//console.log(id);
 			var newTime = new Station("test", tableObject.stations[id].arrivalTime.getHours(), tableObject.stations[id].arrivalTime.getMinutes(), tableObject.stations[id].stayingTime);
@@ -148,69 +149,105 @@ var Table = function(name, firstStation, lastStation) {
 				$(this).val(tableObject.stations[id].stayingTime);
 			}
 			else {
-				tableObject.stations[id].stayChange(minutes);
-				tableObject.sort();
-				tableObject.renderStationWay();
-				tableObject.renderDepartureTime();				
+				changeStationStay(dbId, minutes).done(function(result) {
+					if(result) {
+						tableObject.stations[id].stayChange(minutes);
+						tableObject.sort();
+						tableObject.renderStationWay();
+						tableObject.renderDepartureTime();	
+					}
+					else {
+						alert("Невозможно изменить время")
+					}
+				});
+			
 			}
 
 		});
-		function setNewArrivalTime(id, hours, minutes) {
+		function setNewArrivalTime(id, hours, minutes, dbId) {
+			var deferred = $.Deferred();
 			var newTime = new Date();
 			newTime.setHours(hours, 0);
 			newTime.setMinutes(minutes, 0);
 			var newDepTimeMs = newTime.getTime() + (tableObject.stations[id].stayingTime*1000*60);
 			if (tableObject.stations[id + 1] && newDepTimeMs >= tableObject.stations[id + 1].arrivalTime.getTime()) {
 				alert("Неверное время");
-				return false;
+				var result = { changed: false };
+				deferred.resolve(result);
 			}
 			else if (tableObject.stations[id - 1] && newTime.getTime() <= tableObject.stations[id - 1].departureTime.getTime()) {
 				alert("Неверное время");
-				return false;
+				var result = { changed: false };
+				deferred.resolve(result);
 			}
 			else {
-				tableObject.stations[id].arrivalTimeChange(hours, minutes);
+				changeStationTime(dbId, hours, minutes).done(function(result) {
+					if(result) {
+						tableObject.stations[id].arrivalTimeChange(hours, minutes);
 
-				if (id !== tableObject.stations.length - 1) {
-					tableObject.stations[id].nextStationWay = tableObject.stations[id + 1].arrivalTime.getTime() - tableObject.stations[id].departureTime.getTime();
-				}
-				else {
-					tableObject.stations[id].nextStationWay = 0;
-				}
-				tableObject.sort();
-				if (tableObject.stations[id].nextStationWay < 0 || (tableObject.stations[id - 1] && tableObject.stations[id].time < tableObject.stations[id - 1].departureTime.getTime())) {
-					tableObject.renderAll();
-				}
-				else {
-					
-					tableObject.renderStationWay();
-					tableObject.renderDepartureTime();				
-				}
-				return true;
+						if (id !== tableObject.stations.length - 1) {
+							tableObject.stations[id].nextStationWay = tableObject.stations[id + 1].arrivalTime.getTime() - tableObject.stations[id].departureTime.getTime();
+						}
+						else {
+							tableObject.stations[id].nextStationWay = 0;
+						}
+						tableObject.sort();
+						if (tableObject.stations[id].nextStationWay < 0 || (tableObject.stations[id - 1] && tableObject.stations[id].time < tableObject.stations[id - 1].departureTime.getTime())) {
+							tableObject.renderAll();
+						}
+						else {
+							
+							tableObject.renderStationWay();
+							tableObject.renderDepartureTime();				
+						}
+						var result = { changed: true };
+						deferred.resolve(result);
+					}
+					else {
+						alert("Невозможно изменить время");
+						var result = { changed: false };
+						deferred.resolve(result);
+					}
+
+				});
+
 			}
-
+			return deferred.promise();
 		}
 		$(".arrival-hour").change(function() {
+			var $hourEl = $(this);
 			var id = $(this).data("id");
+			var dbId = $(this).data("dbid");
 			var hours = parseInt($(this).val());
 			var minutes = parseInt($(".arrival-minute[data-id='"+ id +"']").val());
-			var timeChanged = setNewArrivalTime(id, hours, minutes);
-			if (!timeChanged) {
-				$(this).val(tableObject.stations[id].arrivalTime.getHours());
-				$(".arrival-minute[data-id='"+ id +"']").val(tableObject.stations[id].arrivalTime.getMinutes())
-			}
-			$(this).val(timePrefix($(this).val()));
+			setNewArrivalTime(id, hours, minutes, dbId).done(function(result) {
+				if(result.changed) {
+					$(this).val(timePrefix(tableObject.stations[id].arrivalTime.getHours()));
+					$(".arrival-minute[data-id='"+ id +"']").val(timePrefix(tableObject.stations[id].arrivalTime.getMinutes()));
+				}
+				$hourEl.val(timePrefix($hourEl.val()));
+			});
+
 		});
 		$(".arrival-minute").change(function() {
+			var $minuteEl = $(this);
 			var id = $(this).data("id");
+			var dbId = $(this).data("dbid");
 			var hours = parseInt($(".arrival-hour[data-id='"+ id +"']").val());
 			var minutes = parseInt($(this).val());
-			var timeChanged = setNewArrivalTime(id, hours, minutes);
+			setNewArrivalTime(id, hours, minutes, dbId).done(function(result) {
+				if(result.changed) {
+					$(this).val(timePrefix(tableObject.stations[id].arrivalTime.getMinutes()));
+					$(".arrival-hour[data-id='"+ id +"']").val(timePrefix(tableObject.stations[id].arrivalTime.getHours()));
+				}
+				$minuteEl.val(timePrefix($minuteEl.val()));
+			});	
+/*			var timeChanged = setNewArrivalTime(id, hours, minutes);
 			if (!timeChanged) {
 				$(this).val(tableObject.stations[id].arrivalTime.getMinutes());
 				$(".arrival-hour[data-id='"+ id +"']").val(tableObject.stations[id].arrivalTime.getHours())
 			}
-			$(this).val(timePrefix($(this).val()));
+			$(this).val(timePrefix($(this).val()));*/
 		});
 	}
 	this.renderStationWay = function() {
@@ -374,8 +411,53 @@ function deleteStationFromBase(id) {
     });
     return deferred.promise();
 }
-//var testSt = new Station("qsdvrbre", 13, 15, 30);
-
+function changeStationTime(id, hours, minutes) {
+	var deferred = $.Deferred();
+	var data = {
+		action: "change_time",
+		id: id,
+		hours: hours,
+		minutes: minutes
+	};
+    $.ajax({
+        url: "/station_change.php/",
+        type: 'post',
+        dataType: "json",
+        data: data,
+        success: function(data){
+        	console.log("the station time successfully changed ", data);
+        	deferred.resolve(true);
+        },
+        error: function(err) {
+            console.log("kind of error ", err);
+        	deferred.resolve(false);
+        }
+    });
+    return deferred.promise();
+}
+function changeStationStay(id, staying) {
+	var deferred = $.Deferred();
+	var data = {
+		action: "change_staying",
+		id: id,
+		staying: staying,
+	};
+    $.ajax({
+        url: "/station_change.php/",
+        type: 'post',
+        dataType: "json",
+        data: data,
+        success: function(data){
+        	console.log("the station time successfully changed ", data);
+        	deferred.resolve(true);
+        },
+        error: function(err) {
+            console.log("kind of error ", err);
+        	deferred.resolve(false);
+        }
+    });
+    return deferred.promise();
+}
 function board(activeTable) {
 	$ui.board.html("Расписание активно");
 	var time = new Date().getTime();
@@ -397,19 +479,6 @@ function board(activeTable) {
 }
 
 $(document).ready(function() {
-	//addStationToBase(testSt);
-
-/*	var testData = {
-		name: "русскаибукавы",
-	};
-	$.ajax({
-		url: "/test_ajax.php/",
-		type: 'post',
-		dataType: "json",
-		data: testData,
-	});
-*/
-	//deleteStationFromBase(26);
 	activeTable.renderAll();
 	fillSelect();
 	var boardIntervalID;
